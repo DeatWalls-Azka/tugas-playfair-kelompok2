@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>PLAYFAIR // ASCII R3F DOSSIER — ROOM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react/": "https://esm.sh/react@18.3.1/",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+    "react/jsx-dev-runtime": "https://esm.sh/react@18.3.1/jsx-dev-runtime",
+    "three": "https://esm.sh/three@0.161.0",
+    "three/addons/": "https://esm.sh/three@0.161.0/examples/jsm/",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.19?external=react,react-dom,three",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@9.99.0?external=react,react-dom,three,@react-three/fiber",
+    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@2.16.0?external=react,react-dom,three,@react-three/fiber,postprocessing",
+    "postprocessing": "https://esm.sh/postprocessing@6.35.0?external=three"
+  }
+}
+</script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body,#root{height:100%;margin:0}
+  body{background:#02040a;color:#dbe6f2;overflow:hidden;
+    font-family:'Playfair Display',Georgia,serif;-webkit-font-smoothing:antialiased;
+    font-variant-numeric:tabular-nums;}
+  textarea,input,button,.field,.btn{font-family:'Playfair Display',Georgia,serif !important;
+    font-variant-numeric:tabular-nums;}
+  .mono{font-family:'Playfair Display',Georgia,serif;font-variant-numeric:tabular-nums;}
+
+  .panel{position:relative;border-radius:4px;
+    background:linear-gradient(180deg,rgba(10,18,30,.72),rgba(5,10,20,.55));
+    border:1px solid rgba(120,170,220,.14);backdrop-filter:blur(6px);}
+  .panel::before,.panel::after{content:'';position:absolute;width:10px;height:10px;pointer-events:none}
+  .panel::before{top:-1px;left:-1px;border-top:1px solid rgba(255,150,60,.75);border-left:1px solid rgba(255,150,60,.75)}
+  .panel::after{bottom:-1px;right:-1px;border-bottom:1px solid rgba(60,255,180,.6);border-right:1px solid rgba(60,255,180,.6)}
+
+  .label{font-family:'Playfair Display',Georgia,serif;font-size:10px;letter-spacing:.28em;
+    text-transform:uppercase;color:rgba(180,210,240,.55);font-style:italic;font-weight:500;}
+
+  .field{width:100%;background:rgba(0,6,14,.7);border:1px solid rgba(120,170,220,.16);
+    color:#e8f0fa;padding:9px 11px;font-size:13px;border-radius:3px;outline:none;
+    letter-spacing:.04em;transition:border-color .16s, box-shadow .16s;}
+  .field:focus{border-color:rgba(255,150,60,.7);box-shadow:0 0 0 1px rgba(255,150,60,.25), 0 0 18px rgba(255,150,60,.15)}
+  .field::placeholder{color:rgba(180,210,240,.25)}
+  .field.glow{border-color:rgba(255,180,100,.85);
+    box-shadow:0 0 0 1px rgba(255,150,60,.35), 0 0 26px rgba(255,150,60,.28),
+               inset 0 0 12px rgba(255,150,60,.1);}
+
+  .btn{font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:7px 11px;
+    border:1px solid rgba(120,170,220,.2);border-radius:3px;color:rgba(200,220,240,.78);
+    background:rgba(10,20,35,.5);cursor:pointer;transition:.16s;white-space:nowrap;font-weight:500;}
+  .btn:hover:not(:disabled){border-color:rgba(255,150,60,.7);color:#ffd9a0;background:rgba(255,150,60,.08);box-shadow:0 0 14px rgba(255,150,60,.2)}
+  .btn.on{border-color:rgba(255,150,60,.85);color:#ffcf8a;background:rgba(255,150,60,.16);box-shadow:0 0 18px rgba(255,150,60,.3)}
+  .btn:disabled{opacity:.3;cursor:not-allowed}
+
+  .caret{animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:rgba(120,170,220,.25);border-radius:2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:#ff9640;cursor:pointer;border:none;box-shadow:0 0 8px rgba(255,150,60,.7)}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#ff9640;
+    cursor:pointer;border:none;box-shadow:0 0 8px rgba(255,150,60,.7)}
+
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:rgba(0,0,0,.3)}
+  ::-webkit-scrollbar-thumb{background:rgba(255,150,60,.3);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(255,150,60,.5)}
+
+  .vignette-overlay{position:fixed;inset:0;pointer-events:none;z-index:6;
+    background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.45) 88%, rgba(0,0,0,.85) 100%);}
+  .scanlines-overlay{position:fixed;inset:0;pointer-events:none;z-index:7;opacity:.08;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0px, rgba(255,255,255,.08) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:.4;
+    background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 0);
+    background-size:2px 2px;animation:grainShift .18s steps(2) infinite;}
+  @keyframes grainShift{0%{transform:translate(0,0)}50%{transform:translate(-1px,1px)}100%{transform:translate(0,0)}}
+
+  .crosshair{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:5px;height:5px;border-radius:50%;background:rgba(255,150,60,.95);pointer-events:none;z-index:70;
+    box-shadow:0 0 10px rgba(255,150,60,.9), 0 0 20px rgba(255,150,60,.5);}
+
+  .hud-layer      { z-index:30 }
+  .hud-layer-top  { z-index:40 }
+  .hud-layer-menu { z-index:55 }
+  .intro-layer    { z-index:60 }
+  .shatter-layer  { z-index:100 }
+
+  .draggable { cursor: grab; }
+  .draggable:active { cursor: grabbing; }
+  .draggable .field,
+  .draggable input,
+  .draggable textarea,
+  .draggable button,
+  .draggable label,
+  .draggable a { cursor: auto; }
+
+  .bigram-card{
+    display:flex;align-items:center;justify-content:center;
+    min-width:32px;height:22px;padding:0 6px;border-radius:3px;
+    border:1px solid rgba(120,170,220,.18);
+    background:rgba(6,14,26,.7);
+    color:rgba(219,230,242,.55);
+    font-size:11px;letter-spacing:.10em;font-weight:600;
+    transition:opacity .2s ease, transform .2s cubic-bezier(.34,1.56,.64,1),
+               border-color .2s, color .2s, background .2s, box-shadow .2s;
+  }
+  .bigram-card.active{
+    border-color:rgba(255,150,60,.9);
+    color:#ffd9a0;background:rgba(255,150,60,.14);
+    box-shadow:0 0 12px rgba(255,150,60,.35), inset 0 0 8px rgba(255,150,60,.15);
+  }
+  .bigram-card.done{
+    border-color:rgba(46,230,168,.4);
+    color:rgba(168,255,221,.75);
+    background:rgba(10,60,45,.35);
+  }
+  .bigram-card .sub{font-size:9px;color:rgba(46,230,168,.85);margin-left:4px;letter-spacing:.10em;}
+  .bigram-card.active .sub{color:#a8ffdd;}
+
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(120,170,220,.10);
+  }
+  .panel-header .label { font-size: 10px; }
+  .min-btn {
+    background: transparent;
+    border: 1px solid rgba(120,170,220,.2);
+    color: rgba(180,210,240,.6);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 1px 6px;
+    line-height: 1;
+    border-radius: 2px;
+    font-family: 'Playfair Display', Georgia, serif;
+    transition: .15s;
+  }
+  .min-btn:hover {
+    color: #ff9640;
+    border-color: rgba(255,150,60,.6);
+    background: rgba(255,150,60,.08);
+  }
+
+  .hamburger {
+    background: rgba(10,20,35,.7);
+    border: 1px solid rgba(120,170,220,.3);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    color: #ffcf8a;
+    font-size: 16px;
+    line-height: 1;
+    transition: .15s;
+  }
+  .hamburger:hover {
+    border-color: rgba(255,150,60,.7);
+    background: rgba(255,150,60,.08);
+  }
+  .mobile-menu {
+    position: fixed;
+    top: 52px;
+    right: 12px;
+    min-width: 240px;
+    max-width: 90vw;
+    animation: slideIn .18s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .mobile-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    color: rgba(200,220,240,.85);
+    letter-spacing: .06em;
+    border-bottom: 1px solid rgba(120,170,220,.08);
+    transition: .12s;
+  }
+  .mobile-toggle:last-child { border-bottom: none; }
+  .mobile-toggle:hover { background: rgba(255,150,60,.06); }
+  .mobile-toggle.on { color: #ffcf8a; }
+  .mobile-toggle .indicator {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(120,170,220,.3);
+    transition: .15s;
+  }
+  .mobile-toggle.on .indicator {
+    background: #ff9640;
+    box-shadow: 0 0 8px rgba(255,150,60,.7);
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="vignette-overlay"></div>
+<div class="scanlines-overlay"></div>
+<div class="grain"></div>
+
+<script type="text/babel" data-type="module" data-presets="react">
+import React, { useState, useRef, useEffect, useMemo, useCallback, Suspense } from 'react';
+import { createRoot } from 'react-dom/client';
+import * as THREE from 'three';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import {
+  PointerLockControls, KeyboardControls, useKeyboardControls,
+  Text, Line, useCursor, AsciiRenderer,
+} from '@react-three/drei';
+import {
+  EffectComposer, Bloom, Vignette, ChromaticAberration, Noise, ToneMapping,
+} from '@react-three/postprocessing';
+import { BlendFunction, ToneMappingMode } from 'postprocessing';
+
+const PLAYFAIR_FONT =
+  'https://fonts.gstatic.com/s/playfairdisplay/v37/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtXK-F2qC0s.woff';
+
+/* ═══════════════════════════════════════════════════════════
+   SOUND ENGINE — procedural. Pre-warms buffers on init()
+   ═══════════════════════════════════════════════════════════ */
+const Sound = (() => {
+  let ctx = null;
+  let master = null;
+  let ambient = null;
+  let muted = false;
+  let shatterBuf = null;
+
+  function init() {
+    if (ctx) return ctx;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = muted ? 0 : 0.5;
+      master.connect(ctx.destination);
+      // Pre-generate the heavy shatter noise buffer here (once).
+      const sr = ctx.sampleRate;
+      const dur = 1.4;
+      shatterBuf = ctx.createBuffer(1, Math.floor(sr * dur), sr);
+      const d = shatterBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) {
+        const t = i / sr;
+        const env = Math.exp(-t * 3.1) * (1 - Math.exp(-t * 220));
+        d[i] = (Math.random() * 2 - 1) * env;
+      }
+    } catch (e) { ctx = null; }
+    return ctx;
+  }
+  function resume() {
+    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+  }
+  function now() { return ctx ? ctx.currentTime : 0; }
+
+  function tone(freq, duration, type, gain, offset) {
+    const c = init(); if (!c) return;
+    resume();
+    const t0 = now() + (offset || 0);
+    const osc = c.createOscillator();
+    const g = c.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain || 0.05), t0 + 0.010);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+    osc.connect(g); g.connect(master);
+    osc.start(t0); osc.stop(t0 + duration + 0.05);
+  }
+
+  function noise(duration, filterType, filterFreq, gain, sweepTo, q) {
+    const c = init(); if (!c) return;
+    resume();
+    const sr = c.sampleRate;
+    const buf = c.createBuffer(1, Math.max(1, Math.floor(sr * duration)), sr);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) {
+      const t = i / sr;
+      d[i] = (Math.random() * 2 - 1) * Math.exp(-t * (4 / duration));
+    }
+    const src = c.createBufferSource(); src.buffer = buf;
+    const filter = c.createBiquadFilter();
+    filter.type = filterType || 'bandpass';
+    filter.frequency.value = filterFreq || 1000;
+    filter.Q.value = q == null ? 2 : q;
+    if (sweepTo) {
+      filter.frequency.exponentialRampToValueAtTime(
+        Math.max(20, sweepTo), c.currentTime + duration);
+    }
+    const g = c.createGain(); g.gain.value = gain || 0.1;
+    src.connect(filter); filter.connect(g); g.connect(master);
+    src.start();
+  }
+
+  return {
+    init, resume,
+    get muted() { return muted; },
+    setMuted(v) {
+      muted = !!v;
+      if (master) master.gain.setTargetAtTime(muted ? 0 : 0.5, now(), 0.05);
+    },
+    toggleMute() { this.setMuted(!muted); return muted; },
+
+    // ── UI
+    type()   { tone(1700 + Math.random() * 600, 0.018, 'square', 0.012); },
+    click()  { tone(1500, 0.035, 'square', 0.035);
+               tone(760, 0.055, 'sine', 0.028, 0.010); },
+    hover()  { tone(2500, 0.012, 'sine', 0.007); },
+    panel()  { tone(420, 0.07, 'triangle', 0.05);
+               tone(620, 0.06, 'triangle', 0.038, 0.045); },
+    toggle() { tone(620, 0.08, 'sine', 0.055);
+               tone(940, 0.08, 'sine', 0.045, 0.04); },
+    error()  { tone(160, 0.16, 'sawtooth', 0.05);
+               tone(120, 0.20, 'sawtooth', 0.045, 0.05); },
+
+    // ── Scene
+    step() {
+      noise(0.085, 'lowpass', 180 + Math.random() * 160, 0.09, null, 0.8);
+      tone(60 + Math.random() * 30, 0.05, 'sine', 0.05);
+    },
+    whoosh() { noise(0.46, 'bandpass', 480, 0.07, 2600, 5); },
+    burst()  {
+      noise(0.34, 'highpass', 1400, 0.11, null, 1);
+      tone(88, 0.30, 'sine', 0.13);
+      tone(60, 0.42, 'sine', 0.09, 0.02);
+    },
+    birth() {
+      tone(523.25, 0.34, 'sine', 0.045);
+      tone(783.99, 0.34, 'sine', 0.035);
+      tone(1046.50, 0.34, 'sine', 0.028);
+      tone(1567.98, 0.28, 'sine', 0.018, 0.02);
+    },
+    // uses the pre-generated buffer — no synchronous synthesis on click
+    shatter() {
+      const c = init(); if (!c || !shatterBuf) return;
+      resume();
+      const src = c.createBufferSource(); src.buffer = shatterBuf;
+      const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1700;
+      const g = c.createGain(); g.gain.value = 0.20;
+      src.connect(hp); hp.connect(g); g.connect(master); src.start();
+      tone(170, 0.55, 'sine', 0.35);
+      tone(42,  0.55, 'sine', 0.30, 0.02);
+    },
+    ambienceStart() {
+      const c = init(); if (!c) return;
+      resume();
+      if (ambient) return;
+
+      const bus = c.createGain();
+      bus.gain.setValueAtTime(0.0001, now());
+      bus.gain.exponentialRampToValueAtTime(0.065, now() + 5);
+      bus.connect(master);
+
+      const o1 = c.createOscillator(); o1.type = 'sine'; o1.frequency.value = 48.999;
+      const o2 = c.createOscillator(); o2.type = 'sine'; o2.frequency.value = 73.416;
+      o2.detune.value = 6;
+      const o3 = c.createOscillator(); o3.type = 'triangle'; o3.frequency.value = 97.999;
+      o3.detune.value = -8;
+
+      const g1 = c.createGain(); g1.gain.value = 0.65;
+      const g2 = c.createGain(); g2.gain.value = 0.22;
+      const g3 = c.createGain(); g3.gain.value = 0.09;
+
+      o1.connect(g1).connect(bus);
+      o2.connect(g2).connect(bus);
+      o3.connect(g3).connect(bus);
+
+      const lfo = c.createOscillator(); lfo.frequency.value = 0.06;
+      const lfoG = c.createGain(); lfoG.gain.value = 0.18;
+      lfo.connect(lfoG); lfoG.connect(g1.gain);
+
+      const sr = c.sampleRate;
+      const nbuf = c.createBuffer(1, sr * 4, sr);
+      const nd = nbuf.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+      const ns = c.createBufferSource(); ns.buffer = nbuf; ns.loop = true;
+      const nf = c.createBiquadFilter(); nf.type = 'bandpass';
+      nf.frequency.value = 260; nf.Q.value = 1.4;
+      const ng = c.createGain(); ng.gain.value = 0.035;
+      ns.connect(nf).connect(ng).connect(bus);
+
+      const lfo2 = c.createOscillator(); lfo2.frequency.value = 0.035;
+      const lfo2G = c.createGain(); lfo2G.gain.value = 130;
+      lfo2.connect(lfo2G); lfo2G.connect(nf.frequency);
+
+      o1.start(); o2.start(); o3.start();
+      lfo.start(); lfo2.start(); ns.start();
+
+      ambient = { o1, o2, o3, lfo, lfo2, ns, bus };
+    },
+  };
+})();
+
+/* ═══ CIPHER ═══ */
+const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function buildGrid(key) {
+  const seen = new Set(); const seq = [];
+  const push = (ch) => { if (ch && !seen.has(ch)) { seen.add(ch); seq.push(ch); } };
+  (key || '').toUpperCase().replace(/[^A-Z]/g, '').split('')
+    .forEach((ch) => push(ch === 'J' ? 'I' : ch));
+  for (const ch of ALPHA) if (ch !== 'J') push(ch);
+  const grid = [];
+  for (let r = 0; r < 5; r++) grid.push(seq.slice(r * 5, r * 5 + 5));
+  return { grid, seq };
+}
+function posMap(grid) {
+  const m = {};
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) m[grid[r][c]] = [r, c];
+  return m;
+}
+function toBigrams(text) {
+  const clean = (text || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+  const out = []; let i = 0;
+  while (i < clean.length) {
+    const a = clean[i];
+    if (i + 1 >= clean.length) { out.push([a, 'X']); i += 1; continue; }
+    const b = clean[i + 1];
+    if (a === b) { out.push([a, 'X']); i += 1; continue; }
+    out.push([a, b]); i += 2;
+  }
+  return out;
+}
+function runCipher(text, key, mode) {
+  const { grid } = buildGrid(key);
+  const pos = posMap(grid);
+  const dir = mode === 'encrypt' ? 1 : -1;
+  const pairs = toBigrams(text);
+  const steps = [], outChars = [];
+  for (const [a, b] of pairs) {
+    const [ra, ca] = pos[a]; const [rb, cb] = pos[b];
+    let out, rule, wrap = null;
+    if (ra === rb) {
+      const c1 = (ca + dir + 5) % 5, c2 = (cb + dir + 5) % 5;
+      out = [grid[ra][c1], grid[rb][c2]];
+      rule = 'SAME ROW';
+      if ((c1 === 0 && ca === 4) || (c2 === 0 && cb === 4)) wrap = 'row-right';
+      if ((c1 === 4 && ca === 0) || (c2 === 4 && cb === 0)) wrap = 'row-left';
+    } else if (ca === cb) {
+      const r1 = (ra + dir + 5) % 5, r2 = (rb + dir + 5) % 5;
+      out = [grid[r1][ca], grid[r2][cb]];
+      rule = 'SAME COLUMN';
+      if ((r1 === 0 && ra === 4) || (r2 === 0 && rb === 4)) wrap = 'col-down';
+      if ((r1 === 4 && ra === 0) || (r2 === 4 && rb === 0)) wrap = 'col-up';
+    } else {
+      out = [grid[ra][cb], grid[rb][ca]];
+      rule = 'RECTANGLE';
+    }
+    steps.push({
+      inPair: [a, b], inPos: [[ra, ca], [rb, cb]],
+      outPair: out, outPos: [pos[out[0]], pos[out[1]]],
+      rule, wrap,
+    });
+    outChars.push(out[0], out[1]);
+  }
+  return { grid, steps, output: outChars.join('') };
+}
+
+/* ═══ INTRO ═══ */
+const INTRO_TEXT =
+`In 1854, Charles Wheatstone devised a cipher that would resist every cryptanalyst for nearly a century.
+
+It was offered to the British Foreign Office — and rejected as "too complicated to be worth the trouble."
+
+It carries the name of Lord Playfair, who had nothing to do with its invention.
+
+It does not encrypt letters. It encrypts pairs.
+Twenty-five letters. Five rows. Five columns. No J.
+
+What follows is a working dossier — the key matrix, the digraphs, the rules — rendered in real time as ASCII geometry.`;
+
+function Intro({ onEnter, fading }) {
+  const [n, setN] = useState(0);
+  const done = n >= INTRO_TEXT.length;
+  useEffect(() => {
+    if (done) return;
+    const ch = INTRO_TEXT[n];
+    const delay = ch === '\n' ? 260 : (ch === '.' ? 190 : ch === '—' ? 120 : 24);
+    const t = setTimeout(() => {
+      setN((v) => v + 1);
+      if (ch !== ' ' && ch !== '\n') Sound.type();
+    }, delay);
+    return () => clearTimeout(t);
+  }, [n, done]);
+  useEffect(() => {
+    const onKey = () => onEnter();
+    if (!done) return;
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [done, onEnter]);
+  return (
+    <div onClick={onEnter}
+      className="intro-layer fixed inset-0 bg-black flex items-center justify-center cursor-pointer select-none"
+      style={{ opacity: fading ? 0 : 1, transition: 'opacity .18s linear' }}>
+      <div className="max-w-3xl px-6 md:px-10">
+        <p className="whitespace-pre-wrap"
+          style={{ fontFamily: '"Playfair Display", Georgia, serif',
+            fontSize: 'clamp(13px, 1.9vw, 23px)', lineHeight: 1.75,
+            color: 'rgba(255,255,255,.92)', letterSpacing: '.01em',
+            textShadow: '0 0 24px rgba(255,150,60,.15)' }}>
+          {INTRO_TEXT.slice(0, n)}
+          <span className="caret" style={{ color: '#ff9640' }}>▍</span>
+        </p>
+        {done && (
+          <p className="mono mt-10"
+            style={{ fontSize: 11, letterSpacing: '.38em', color: 'rgba(255,150,60,.85)',
+              fontStyle: 'italic', animation: 'blink 1.6s steps(1) infinite' }}>
+            CLICK ANYWHERE TO ENTER THE DOSSIER
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ═══ SHATTER — always mounted, activates on trigger ═══
+   Pre-sized canvas lives in the DOM at all times so there's no
+   first-frame allocation hitch when the shatter actually fires. */
+function ShatterCanvas({ active, onDone }) {
+  const ref = useRef(null);
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
+
+  // Keep the canvas sized to the viewport at all times
+  useEffect(() => {
+    const cv = ref.current; if (!cv) return;
+    const resize = () => {
+      cv.width = window.innerWidth;
+      cv.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+  useEffect(() => {
+    const cv = ref.current; if (!cv) return;
+    const ctx = cv.getContext('2d');
+    if (!active) {
+      // idle: clear and stop
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      return;
+    }
+
+    const W = cv.width, H = cv.height;
+    const COLS = 7, ROWS = 5, cw = W / COLS, chh = H / ROWS;
+    const pts = [];
+    for (let r = 0; r <= ROWS; r++) {
+      pts[r] = [];
+      for (let c = 0; c <= COLS; c++) {
+        const edge = r === 0 || r === ROWS || c === 0 || c === COLS;
+        const jx = edge ? 0 : (Math.random() - 0.5) * cw * 0.72;
+        const jy = edge ? 0 : (Math.random() - 0.5) * chh * 0.72;
+        pts[r][c] = { x: c * cw + jx, y: r * chh + jy };
+      }
+    }
+    const shards = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const p00 = pts[r][c], p10 = pts[r][c + 1];
+      const p01 = pts[r + 1][c], p11 = pts[r + 1][c + 1];
+      const tris = Math.random() < 0.5
+        ? [[p00, p10, p11], [p00, p11, p01]]
+        : [[p00, p10, p01], [p10, p11, p01]];
+      for (const t of tris) {
+        const cx = (t[0].x + t[1].x + t[2].x) / 3, cy = (t[0].y + t[1].y + t[2].y) / 3;
+        const ang = Math.atan2(cy - H * 0.45, cx - W * 0.5);
+        const spd = 170 + Math.random() * 540;
+        shards.push({
+          pts: t.map((p) => ({ x: p.x - cx, y: p.y - cy })),
+          cx, cy,
+          vx: Math.cos(ang) * spd + (Math.random() - 0.5) * 170,
+          vy: Math.sin(ang) * spd - 190 - Math.random() * 280,
+          rot: 0, vr: (Math.random() - 0.5) * 7, alpha: 1,
+        });
+      }
+    }
+    let prev = performance.now(); let raf = 0; let finished = false;
+    const frame = (now) => {
+      const dt = Math.min(0.032, (now - prev) / 1000); prev = now;
+      ctx.clearRect(0, 0, W, H);
+      let alive = 0;
+      for (const s of shards) {
+        if (s.alpha <= 0) continue;
+        s.vy += 1550 * dt; s.vx *= 1 - 0.55 * dt;
+        s.cx += s.vx * dt; s.cy += s.vy * dt; s.rot += s.vr * dt;
+        s.alpha -= dt * 0.72; if (s.alpha <= 0) continue;
+        alive++;
+        ctx.save(); ctx.translate(s.cx, s.cy); ctx.rotate(s.rot);
+        ctx.beginPath();
+        ctx.moveTo(s.pts[0].x, s.pts[0].y);
+        ctx.lineTo(s.pts[1].x, s.pts[1].y);
+        ctx.lineTo(s.pts[2].x, s.pts[2].y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,180,120,' + (0.14 * s.alpha).toFixed(3) + ')';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,240,220,' + (0.9 * s.alpha).toFixed(3) + ')';
+        ctx.lineWidth = 1.1; ctx.stroke(); ctx.restore();
+      }
+      if (alive > 0) raf = requestAnimationFrame(frame);
+      else if (!finished) { finished = true; doneRef.current && doneRef.current(); }
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [active]);
+
+  return <canvas ref={ref}
+    className="shatter-layer fixed inset-0 pointer-events-none"
+    style={{ width: '100%', height: '100%',
+      display: active ? 'block' : 'none' }} />;
+}
+
+/* ═══ GEOMETRY ═══ */
+const EYE_HEIGHT = 1.7, WALK_SPEED = 4.2;
+const ROOM_W = 16, ROOM_D = 16, ROOM_H = 4.0;
+const MONITOR_POS = [0, 1.95, -5.15];
+const CELL = 0.32, GAP = 0.03, CAP_SIZE = 0.30;
+const BUILD_GHOST_DELAY = 900, BUILD_STAGGER = 55, BUILD_FLY_DURATION = 420;
+const RESULT_OFFSET = 2.2;
+
+/* Step timeline.
+   Each action has its OWN window. The birth letters glide to the result
+   slot within a dedicated `glide` window that ALWAYS reaches progress = 1
+   before `settle` starts, so nothing is ever cut off by the next step. */
+const PH = {
+  rule:   [0.00, 0.05],
+  fly1:   [0.05, 0.22],
+  burst1: [0.22, 0.28],
+  birth1: [0.28, 0.36],
+  glide1: [0.36, 0.48],
+  fly2:   [0.48, 0.66],
+  burst2: [0.66, 0.72],
+  birth2: [0.72, 0.80],
+  glide2: [0.80, 0.97],
+  settle: [0.97, 1.00],
+};
+function pp(t, [a, b]) { if (t <= a) return 0; if (t >= b) return 1; return (t - a) / (b - a); }
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+function cellLocalX(c) { return (c - 2) * (CELL + GAP); }
+function cellLocalY(r) { return (2 - r) * (CELL + GAP); }
+
+/* ═══ PLAYER ═══ */
+function Player({ focusedTarget, active }) {
+  const { camera } = useThree();
+  const [, get] = useKeyboardControls();
+  const velocity = useRef(new THREE.Vector3());
+  const bobTime = useRef(0);
+  const lastStep = useRef(0);
+  const focusPos = useRef(null), focusLook = useRef(null);
+  const initialized = useRef(false);
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    camera.position.set(0, EYE_HEIGHT, 4.2);
+    camera.lookAt(0, 1.95, -5); camera.updateProjectionMatrix();
+  }, [camera]);
+  useFrame((state, delta) => {
+    if (!active) return;
+    if (focusedTarget) {
+      if (!focusPos.current) {
+        focusPos.current = new THREE.Vector3(
+          focusedTarget.position[0], focusedTarget.position[1] + 0.15,
+          focusedTarget.position[2] + 3.2);
+        focusLook.current = new THREE.Vector3(
+          focusedTarget.position[0], focusedTarget.position[1],
+          focusedTarget.position[2]);
+      }
+      camera.position.lerp(focusPos.current, Math.min(1, delta * 3.0));
+      camera.lookAt(focusLook.current); return;
+    }
+    focusPos.current = null; focusLook.current = null;
+    const { forward, backward, left, right } = get();
+    const dir = new THREE.Vector3();
+    if (forward) dir.z -= 1; if (backward) dir.z += 1;
+    if (left) dir.x -= 1; if (right) dir.x += 1;
+    const moving = dir.lengthSq() > 0;
+    if (moving) {
+      dir.normalize(); dir.applyQuaternion(camera.quaternion);
+      dir.y = 0; dir.normalize();
+    }
+    velocity.current.lerp(dir.multiplyScalar(WALK_SPEED), 0.15);
+    camera.position.add(velocity.current.clone().multiplyScalar(delta));
+    const margin = 0.5;
+    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -ROOM_W / 2 + margin, ROOM_W / 2 - margin);
+    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -ROOM_D / 2 + margin, ROOM_D / 2 - margin);
+    const speed = velocity.current.length();
+    if (moving && speed > 0.2) {
+      bobTime.current += delta * 11 * Math.min(1.6, speed / WALK_SPEED);
+      const phase = Math.floor(bobTime.current / Math.PI);
+      if (phase !== lastStep.current) {
+        lastStep.current = phase;
+        Sound.step();
+      }
+      camera.position.y = EYE_HEIGHT + Math.sin(bobTime.current) * 0.045;
+      camera.position.x += Math.cos(bobTime.current * 0.5) * 0.022 * delta * 4;
+    } else {
+      bobTime.current = 0;
+      lastStep.current = 0;
+      camera.position.y = THREE.MathUtils.lerp(camera.position.y, EYE_HEIGHT, 0.08);
+    }
+  });
+  return null;
+}
+
+/* ═══ DUST ═══ */
+function DustMotes({ count = 240 }) {
+  const pointsRef = useRef(null);
+  const { positions, speeds } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const spd = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3 + 0] = (Math.random() - 0.5) * ROOM_W * 0.9;
+      pos[i * 3 + 1] = Math.random() * ROOM_H;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * ROOM_D * 0.9;
+      spd[i] = 0.05 + Math.random() * 0.15;
+    }
+    return { positions: pos, speeds: spd };
+  }, [count]);
+  useFrame((state, delta) => {
+    const g = pointsRef.current; if (!g) return;
+    const arr = g.geometry.attributes.position.array;
+    for (let i = 0; i < count; i++) {
+      arr[i * 3 + 1] += speeds[i] * delta;
+      arr[i * 3 + 0] += Math.sin(state.clock.elapsedTime * 0.4 + i) * delta * 0.08;
+      if (arr[i * 3 + 1] > ROOM_H) arr[i * 3 + 1] = 0;
+    }
+    g.geometry.attributes.position.needsUpdate = true;
+  });
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial size={0.028} color="#ffd9a8" sizeAttenuation transparent opacity={0.55}
+        depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+    </points>
+  );
+}
+
+/* ═══ ROOM ═══ */
+function Room() {
+  const wallMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: '#141a24', roughness: 0.94, metalness: 0.15,
+    emissive: '#0a1018', emissiveIntensity: 0.25 }), []);
+  const floorMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: '#0c1218', roughness: 0.72, metalness: 0.45,
+    emissive: '#060a10', emissiveIntensity: 0.2 }), []);
+  const ceilMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: '#0e141c', roughness: 0.95, metalness: 0.1 }), []);
+  const deskMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: '#2a1c10', roughness: 0.68, metalness: 0.25,
+    emissive: '#14080a', emissiveIntensity: 0.2 }), []);
+  return (
+    <group>
+      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[ROOM_W, ROOM_D]} /><primitive object={floorMat} attach="material" />
+      </mesh>
+      <mesh position={[0, ROOM_H, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[ROOM_W, ROOM_D]} /><primitive object={ceilMat} attach="material" />
+      </mesh>
+      <mesh position={[0, ROOM_H / 2, -ROOM_D / 2]} receiveShadow>
+        <planeGeometry args={[ROOM_W, ROOM_H]} /><primitive object={wallMat} attach="material" />
+      </mesh>
+      <mesh position={[0, ROOM_H / 2, ROOM_D / 2]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[ROOM_W, ROOM_H]} /><primitive object={wallMat} attach="material" />
+      </mesh>
+      <mesh position={[-ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[ROOM_D, ROOM_H]} /><primitive object={wallMat} attach="material" />
+      </mesh>
+      <mesh position={[ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[ROOM_D, ROOM_H]} /><primitive object={wallMat} attach="material" />
+      </mesh>
+      <mesh position={[0, 0.012, -4.5]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[6.5, 0.04]} />
+        <meshBasicMaterial color="#ff9640" toneMapped={false} transparent opacity={0.75} />
+      </mesh>
+      <mesh position={[0, 0.012, 3.5]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[6.5, 0.04]} />
+        <meshBasicMaterial color="#2ee6a8" toneMapped={false} transparent opacity={0.55} />
+      </mesh>
+      <mesh position={[0, ROOM_H - 0.06, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[4.5, 0.14]} />
+        <meshBasicMaterial color="#d8eaff" toneMapped={false} />
+      </mesh>
+      <group position={[0, 0, -5.4]}>
+        <mesh position={[0, 0.92, 0]} castShadow receiveShadow>
+          <boxGeometry args={[4.6, 0.14, 1.7] } /><primitive object={deskMat} attach="material" />
+        </mesh>
+        {[[-2.1, -0.7], [2.1, -0.7], [-2.1, 0.7], [2.1, 0.7]].map(([x, z], i) => (
+          <mesh key={i} position={[x, 0.46, z]} castShadow>
+            <boxGeometry args={[0.14, 0.92, 0.14]} />
+            <meshStandardMaterial color="#1c1208" roughness={0.85} metalness={0.2} />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+}
+
+/* ═══ GRID SLOT ═══ */
+function GridSlot({ r, c }) {
+  return (
+    <group position={[cellLocalX(c), cellLocalY(r), 0]}>
+      <mesh>
+        <planeGeometry args={[CAP_SIZE + 0.045, CAP_SIZE + 0.045]} />
+        <meshBasicMaterial color="#0e2030" transparent opacity={0.9} />
+      </mesh>
+      <mesh position={[0, 0, 0.001]}>
+        <planeGeometry args={[CAP_SIZE + 0.005, CAP_SIZE + 0.005]} />
+        <meshBasicMaterial color="#020810" transparent opacity={0.95} />
+      </mesh>
+    </group>
+  );
+}
+
+/* ═══ KEYCAP ═══ */
+function Keycap({ r, c, letter, role, buildStart, buildIndex, keyHighlight }) {
+  const grp = useRef(null);
+  useFrame((s, delta) => {
+    const g = grp.current; if (!g) return;
+    let buildT = 1;
+    if (buildStart > 0) {
+      const elapsed = performance.now() - buildStart;
+      const myStart = BUILD_GHOST_DELAY + buildIndex * BUILD_STAGGER;
+      buildT = Math.max(0, Math.min(1, (elapsed - myStart) / BUILD_FLY_DURATION));
+    }
+    const be = buildT < 1 ? 1 - Math.pow(1 - buildT, 3) : 1;
+    g.position.y = (1 - be) * 2.2;
+    g.position.z = (1 - be) * 0.55;
+    const sc = 0.001 + be * 0.999;
+    const k = Math.min(1, delta * 16);
+    g.scale.x += (sc - g.scale.x) * k;
+    g.scale.y = g.scale.x; g.scale.z = g.scale.x;
+  });
+  const isSrc = role === 'source';
+  const isTgt = role === 'target';
+  const keyOnly = keyHighlight && !isSrc && !isTgt;
+  const baseColor = isSrc ? '#5a3010' : isTgt ? '#0a4a3a' : '#2c3d52';
+  const emissive  = isSrc ? '#ff9a3c' : isTgt ? '#2ee6a8' : (keyOnly ? '#ffd9a0' : '#1a2c3e');
+  const emissiveInt = isSrc || isTgt ? 1.9 : (keyOnly ? 1.35 : 0.55);
+  const letterColor = isSrc ? '#fff5dc' : isTgt ? '#daffee' : (keyOnly ? '#fff2d0' : '#e8f2ff');
+  return (
+    <group position={[cellLocalX(c), cellLocalY(r), 0]}>
+      <group ref={grp}>
+        <mesh castShadow>
+          <boxGeometry args={[CAP_SIZE, CAP_SIZE, 0.12]} />
+          <meshStandardMaterial color={baseColor} emissive={emissive}
+            emissiveIntensity={emissiveInt} roughness={0.45} metalness={0.3} />
+        </mesh>
+        <mesh position={[0, 0, 0.061]}>
+          <planeGeometry args={[0.24, 0.24]} />
+          <meshBasicMaterial color="#000000" transparent opacity={0.35} />
+        </mesh>
+        {keyOnly && (
+          <mesh position={[0, 0, -0.085]}>
+            <planeGeometry args={[0.5, 0.5]} />
+            <meshBasicMaterial color="#ffb454" transparent opacity={0.65}
+              toneMapped={false} depthWrite={false} blending={THREE.AdditiveBlending} />
+          </mesh>
+        )}
+        {(isSrc || isTgt) && (
+          <mesh position={[0, 0, -0.075]}>
+            <planeGeometry args={[0.46, 0.46]} />
+            <meshBasicMaterial color={isSrc ? '#ffb454' : '#2ee6a8'}
+              transparent opacity={0.6} toneMapped={false} />
+          </mesh>
+        )}
+        <Text position={[0, 0, 0.063]} fontSize={0.18} color={letterColor}
+          font={PLAYFAIR_FONT} anchorX="center" anchorY="middle"
+          outlineWidth={0.012} outlineColor="#000000" fontWeight={700}>
+          {letter}
+        </Text>
+      </group>
+    </group>
+  );
+}
+
+/* ═══ RULE HIGHLIGHT ═══ */
+function RuleHighlight({ activeStep, alpha, grid }) {
+  if (!activeStep || alpha <= 0.001) return null;
+  const { rule, inPos, outPos } = activeStep;
+  const [r0, c0] = inPos[0];
+  const [r1, c1] = inPos[1];
+  const A = alpha;
+
+  const renderWrapCol = (colIndex, isLeft) => (
+    <group position={[cellLocalX(colIndex), 0, 0.001]}>
+      {[0,1,2,3,4].map(r => (
+        <mesh key={r} position={[0, cellLocalY(r), 0]}>
+          <planeGeometry args={[CAP_SIZE + 0.02, CAP_SIZE + 0.02]} />
+          <meshBasicMaterial color="#0e2030" transparent opacity={0.55 * A} depthWrite={false} />
+        </mesh>
+      ))}
+      {[0,1,2,3,4].map(r => (
+        <Text key={r} position={[0, cellLocalY(r), 0.01]}
+          fontSize={0.16} color="#a8ffdd" fillOpacity={0.85 * A}
+          font={PLAYFAIR_FONT} anchorX="center" anchorY="middle"
+          outlineWidth={0.008} outlineColor="#000000" fontWeight={700}>
+          {grid[r][isLeft ? 4 : 0]}
+        </Text>
+      ))}
+    </group>
+  );
+
+  const renderWrapRow = (rowIndex, isTop) => (
+    <group position={[0, cellLocalY(rowIndex), 0.001]}>
+      {[0,1,2,3,4].map(c => (
+        <mesh key={c} position={[cellLocalX(c), 0, 0]}>
+          <planeGeometry args={[CAP_SIZE + 0.02, CAP_SIZE + 0.02]} />
+          <meshBasicMaterial color="#0e2030" transparent opacity={0.55 * A} depthWrite={false} />
+        </mesh>
+      ))}
+      {[0,1,2,3,4].map(c => (
+        <Text key={c} position={[cellLocalX(c), 0, 0.01]}
+          fontSize={0.16} color="#a8ffdd" fillOpacity={0.85 * A}
+          font={PLAYFAIR_FONT} anchorX="center" anchorY="middle"
+          outlineWidth={0.008} outlineColor="#000000" fontWeight={700}>
+          {grid[isTop ? 4 : 0][c]}
+        </Text>
+      ))}
+    </group>
+  );
+
+  if (rule === 'SAME ROW') {
+    const row = r0;
+    const y = cellLocalY(row);
+    const w = 5 * (CELL + GAP) - GAP + 0.08;
+    const h = CAP_SIZE + 0.10;
+    const wrapRight = activeStep.wrap === 'row-right' || (!activeStep.wrap);
+    const wrapLeft  = activeStep.wrap === 'row-left';
+    return (
+      <group position={[0, 0, 0.115]}>
+        <mesh position={[0, y, 0]}>
+          <planeGeometry args={[w, h]} />
+          <meshBasicMaterial color="#ff9640" transparent opacity={0.22 * A}
+            toneMapped={false} depthWrite={false} />
+        </mesh>
+        <Line points={[[-w/2, y - h/2, 0.001], [w/2, y - h/2, 0.001],
+                       [w/2, y + h/2, 0.001], [-w/2, y + h/2, 0.001],
+                       [-w/2, y - h/2, 0.001]]}
+          color="#ffb454" lineWidth={1.5} transparent opacity={0.75 * A} />
+        {[0, 1].map((k) => {
+          const [ia, ib] = inPos[k]; const [oa, ob] = outPos[k];
+          const x0 = cellLocalX(ib), x1 = cellLocalX(ob);
+          const y0 = cellLocalY(ia);
+          return (
+            <Line key={k} points={[[x0, y0, 0.003], [x1, y0, 0.003]]}
+              color="#2ee6a8" lineWidth={2.5} transparent opacity={0.9 * A} />
+          );
+        })}
+        {wrapRight && renderWrapCol(5, false)}
+        {wrapLeft  && renderWrapCol(-3, true)}
+      </group>
+    );
+  }
+
+  if (rule === 'SAME COLUMN') {
+    const col = c0;
+    const x = cellLocalX(col);
+    const h = 5 * (CELL + GAP) - GAP + 0.08;
+    const w = CAP_SIZE + 0.10;
+    const wrapDown = activeStep.wrap === 'col-down' || (!activeStep.wrap);
+    const wrapUp   = activeStep.wrap === 'col-up';
+    return (
+      <group position={[0, 0, 0.115]}>
+        <mesh position={[x, 0, 0]}>
+          <planeGeometry args={[w, h]} />
+          <meshBasicMaterial color="#ff9640" transparent opacity={0.22 * A}
+            toneMapped={false} depthWrite={false} />
+        </mesh>
+        <Line points={[[x - w/2, h/2, 0.001], [x + w/2, h/2, 0.001],
+                       [x + w/2, -h/2, 0.001], [x - w/2, -h/2, 0.001],
+                       [x - w/2, h/2, 0.001]]}
+          color="#ffb454" lineWidth={1.5} transparent opacity={0.75 * A} />
+        {[0, 1].map((k) => {
+          const [ia, ib] = inPos[k]; const [oa, ob] = outPos[k];
+          const y0 = cellLocalY(ia), y1 = cellLocalY(oa);
+          const x0 = cellLocalX(ib);
+          return (
+            <Line key={k} points={[[x0, y0, 0.003], [x0, y1, 0.003]]}
+              color="#2ee6a8" lineWidth={2.5} transparent opacity={0.9 * A} />
+          );
+        })}
+        {wrapDown && renderWrapRow(5, false)}
+        {wrapUp   && renderWrapRow(-3, true)}
+      </group>
+    );
+  }
+
+  const [ra, ca] = inPos[0]; const [rb, cb] = inPos[1];
+  const corners = [[ra, ca], [ra, cb], [rb, cb], [rb, ca]];
+  return (
+    <group position={[0, 0, 0.115]}>
+      {corners.map(([r, c], i) => (
+        <mesh key={i} position={[cellLocalX(c), cellLocalY(r), 0]}>
+          <planeGeometry args={[CAP_SIZE + 0.10, CAP_SIZE + 0.10]} />
+          <meshBasicMaterial color="#2ee6a8" transparent opacity={0.28 * A}
+            toneMapped={false} depthWrite={false} />
+        </mesh>
+      ))}
+      <Line points={[
+        [cellLocalX(ca), cellLocalY(ra), 0.20],
+        [cellLocalX(cb), cellLocalY(rb), 0.20],
+      ]} color="#ffb454" lineWidth={3} transparent opacity={0.95 * A} />
+      <Line points={[
+        [cellLocalX(cb), cellLocalY(ra), 0.20],
+        [cellLocalX(ca), cellLocalY(rb), 0.20],
+      ]} color="#2ee6a8" lineWidth={3} transparent opacity={0.95 * A} />
+    </group>
+  );
+}
+
+/* ═══ CLONE FLYER ═══ */
+function CloneFlyer({ fromR, fromC, toR, toC, letter, progress, visible }) {
+  const grp = useRef(null);
+  useFrame(() => {
+    const g = grp.current; if (!g) return;
+    if (!visible) { g.visible = false; return; }
+    g.visible = true;
+    const t = progress;
+    const x0 = cellLocalX(fromC), y0 = cellLocalY(fromR);
+    const x1 = cellLocalX(toC),   y1 = cellLocalY(toR);
+    const te = easeInOutCubic(t);
+    const x = x0 + (x1 - x0) * te;
+    const y = y0 + (y1 - y0) * te;
+    const z = 0.08 + Math.sin(t * Math.PI) * 0.34;
+    g.position.set(x, y, z);
+    const sc = 1 + Math.sin(t * Math.PI) * 0.22;
+    g.scale.setScalar(sc);
+  });
+  return (
+    <group ref={grp}>
+      <mesh>
+        <boxGeometry args={[CAP_SIZE * 1.15, CAP_SIZE * 1.15, 0.12]} />
+        <meshStandardMaterial color="#5a3010" emissive="#ffb454"
+          emissiveIntensity={2.6} roughness={0.28} metalness={0.4} toneMapped={false} />
+      </mesh>
+      <mesh position={[0, 0, 0.062]}>
+        <planeGeometry args={[0.26, 0.26]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.55} />
+      </mesh>
+      <Text position={[0, 0, 0.064]} fontSize={0.20} color="#fff5dc"
+        font={PLAYFAIR_FONT} anchorX="center" anchorY="middle"
+        outlineWidth={0.014} outlineColor="#000000" fontWeight={700}>
+        {letter}
+      </Text>
+      <mesh position={[0, 0, -0.09]}>
+        <planeGeometry args={[0.56, 0.56]} />
+        <meshBasicMaterial color="#ffb454" transparent opacity={0.35}
+          toneMapped={false} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+    </group>
+  );
+}
+
+/* ═══ BURST ═══ */
+function Burst({ r, c, progress, active }) {
+  const particles = useMemo(() => {
+    const N = 16;
+    return Array.from({ length: N }, (_, i) => {
+      const angle = (i / N) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const speed = 0.22 + Math.random() * 0.18;
+      return { vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        size: 0.014 + Math.random() * 0.016, delay: Math.random() * 0.2 };
+    });
+  }, []);
+  if (!active) return null;
+  const x = cellLocalX(c), y = cellLocalY(r);
+  return (
+    <group position={[x, y, 0.2]}>
+      <mesh>
+        <ringGeometry args={[0.06 + progress * 0.34, 0.09 + progress * 0.34, 32]} />
+        <meshBasicMaterial color="#ffb454" transparent
+          opacity={Math.max(0, 1 - progress) * 0.9} toneMapped={false}
+          side={THREE.DoubleSide} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+      {particles.map((p, i) => {
+        const localT = Math.max(0, Math.min(1, (progress - p.delay) / (1 - p.delay)));
+        if (localT <= 0 || localT >= 1) return null;
+        const life = 1 - localT;
+        return (
+          <mesh key={i} position={[p.vx * localT, p.vy * localT, 0]}>
+            <sphereGeometry args={[p.size, 6, 6]} />
+            <meshBasicMaterial color="#ffd9a0" transparent opacity={life}
+              toneMapped={false} depthWrite={false} blending={THREE.AdditiveBlending} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+/* ═══ BIRTH LETTER ═══
+   FIX: uses DETERMINISTIC phase-based interpolation, not a delta lerp.
+   birthEase drives scale + Z drop, glideEase drives the horizontal
+   migration to the transformed-grid slot. Both are computed from
+   `stepProgress` directly, so the glide ALWAYS completes at glideT = 1
+   — nothing is ever cut off by the next step tick. */
+function BirthLetter({
+  r, c, letter, stepProgress,
+  birthPhase, glidePhase, slotIndex, active,
+}) {
+  const grp = useRef(null);
+  const resultCellSize = 0.22;
+  const resultGap = 0.03;
+
+  useFrame(() => {
+    const g = grp.current; if (!g) return;
+    if (!active) { g.visible = false; return; }
+    g.visible = true;
+
+    const birthT = pp(stepProgress, birthPhase);
+    const glideT = pp(stepProgress, glidePhase);
+
+    const be = easeOutCubic(birthT);
+    const ge = easeInOutCubic(glideT);
+
+    const gridX = cellLocalX(c);
+    const gridY = cellLocalY(r);
+    const resultX = RESULT_OFFSET + ((slotIndex % 5) - 2) * (resultCellSize + resultGap);
+    const resultY = (2 - Math.floor(slotIndex / 5)) * (resultCellSize + resultGap);
+
+    const x = gridX + (resultX - gridX) * ge;
+    const y = gridY + (resultY - gridY) * ge;
+    // Z starts high (falling in), settles to 0.09, stays there during glide
+    const z = 0.55 + (0.09 - 0.55) * be;
+    const sc = 0.30 + 0.70 * be;
+
+    g.position.set(x, y, z);
+    g.scale.setScalar(sc);
+  });
+
+  if (!active) return null;
+  return (
+    <group ref={grp}>
+      <mesh position={[0, 0, -0.06]}>
+        <planeGeometry args={[0.52, 0.52]} />
+        <meshBasicMaterial color="#b44aff" transparent opacity={0.55}
+          toneMapped={false} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+      <mesh>
+        <boxGeometry args={[CAP_SIZE * 1.08, CAP_SIZE * 1.08, 0.12]} />
+        <meshStandardMaterial color="#2a1040" emissive="#b44aff"
+          emissiveIntensity={2.8} roughness={0.3} metalness={0.5} toneMapped={false} />
+      </mesh>
+      <mesh position={[0, 0, 0.062]}>
+        <planeGeometry args={[0.26, 0.26]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.55} />
+      </mesh>
+      <Text position={[0, 0, 0.064]} fontSize={0.20} color="#e8d0ff"
+        font={PLAYFAIR_FONT} anchorX="center" anchorY="middle"
+        outlineWidth={0.014} outlineColor="#000000" fontWeight={700}>
+        {letter}
+      </Text>
+    </group>
+  );
+}
+
+/* ═══ RESULT GRID CONTENT ═══ */
+function ResultGridContent({ finalOutputSlots, cellSize = 0.22, gap = 0.03 }) {
+  const displaySlots = finalOutputSlots.slice(0, 25);
+  const allSlots = Array.from({ length: 25 }, (_, i) => displaySlots[i] || null);
+
+  return (
+    <group>
+      <mesh position={[0, 0, -0.02]}>
+        <planeGeometry args={[5 * (cellSize + gap) + 0.1, 5 * (cellSize + gap) + 0.1]} />
+        <meshBasicMaterial color="#0a0a18" transparent opacity={0.85} />
+      </mesh>
+      <mesh position={[0, 0, -0.01]}>
+        <planeGeometry args={[5 * (cellSize + gap) + 0.06, 5 * (cellSize + gap) + 0.06]} />
+        <meshBasicMaterial color="#b44aff" transparent opacity={0.15}
+          toneMapped={false} depthWrite={false} />
+      </mesh>
+      {allSlots.map((letter, i) => {
+        const row = Math.floor(i / 5);
+        const col = i % 5;
+        const x = (col - 2) * (cellSize + gap);
+        const y = (2 - row) * (cellSize + gap);
+        const isFilled = letter !== null;
+        return (
+          <group key={i} position={[x, y, 0]}>
+            <mesh position={[0, 0, -0.005]}>
+              <planeGeometry args={[cellSize + 0.02, cellSize + 0.02]} />
+              <meshBasicMaterial color={isFilled ? "#2a1040" : "#0e2030"}
+                transparent opacity={isFilled ? 0.7 : 0.45} />
+            </mesh>
+            {isFilled && (
+              <>
+                <mesh>
+                  <boxGeometry args={[cellSize * 0.95, cellSize * 0.95, 0.08]} />
+                  <meshStandardMaterial color="#2a1040" emissive="#b44aff"
+                    emissiveIntensity={2.5} roughness={0.3} metalness={0.5}
+                    toneMapped={false} />
+                </mesh>
+                <Text position={[0, 0, 0.05]} fontSize={cellSize * 0.7} color="#e8d0ff"
+                  font={PLAYFAIR_FONT} anchorX="center" anchorY="middle"
+                  outlineWidth={0.010} outlineColor="#000000" fontWeight={700}>
+                  {letter}
+                </Text>
+              </>
+            )}
+          </group>
+        );
+      })}
+      <Text position={[0, 5 * (cellSize + gap) / 2 + 0.22, 0.01]}
+        fontSize={0.06} color="#b44aff" font={PLAYFAIR_FONT}
+        anchorX="center" anchorY="middle" letterSpacing={0.15} fontWeight={700}>
+        TRANSFORMED
+      </Text>
+    </group>
+  );
+}
+
+/* ═══ MONITOR SCREEN ═══ */
+function MonitorScreen({
+  grid, activeStep, onClick, buildStart, stepProgress,
+  keyFocused, keyLetterSet, finalOutputSlots, showResult,
+  stepIdx,
+}) {
+  const screenRef = useRef(null);
+  const groupRef = useRef(null);
+  const slideRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered);
+  const uniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
+
+  // Sound triggers per step, driven by phase crossings
+  const sfxRef = useRef({});
+  useEffect(() => { sfxRef.current = {}; }, [stepIdx]);
+  useEffect(() => {
+    if (!activeStep) return;
+    const s = sfxRef.current;
+    if (stepProgress >= PH.fly1[0]   && !s.fly1)   { s.fly1 = true;   Sound.whoosh(); }
+    if (stepProgress >= PH.burst1[0] && !s.burst1) { s.burst1 = true; Sound.burst(); }
+    if (stepProgress >= PH.birth1[0] && !s.birth1) { s.birth1 = true; Sound.birth(); }
+    if (stepProgress >= PH.fly2[0]   && !s.fly2)   { s.fly2 = true;   Sound.whoosh(); }
+    if (stepProgress >= PH.burst2[0] && !s.burst2) { s.burst2 = true; Sound.burst(); }
+    if (stepProgress >= PH.birth2[0] && !s.birth2) { s.birth2 = true; Sound.birth(); }
+  });
+
+  useFrame((state, delta) => {
+    uniforms.uTime.value = state.clock.elapsedTime;
+    if (screenRef.current) {
+      const flicker = 0.92 + Math.sin(state.clock.elapsedTime * 30) * 0.02
+                    + Math.sin(state.clock.elapsedTime * 7.3) * 0.03;
+      screenRef.current.material.opacity = flicker;
+    }
+    if (groupRef.current) {
+      const s = hovered ? 1.015 : 1.0;
+      groupRef.current.scale.lerp(new THREE.Vector3(s, s, s), 0.1);
+    }
+    if (slideRef.current) {
+      const targetX = showResult ? -RESULT_OFFSET : 0;
+      slideRef.current.position.x +=
+        (targetX - slideRef.current.position.x) * Math.min(1, delta * 4);
+    }
+  });
+
+  const roleMap = useMemo(() => {
+    const m = {};
+    if (activeStep) {
+      for (const [r, c] of activeStep.inPos) m[`${r},${c}`] = 'source';
+      for (const [r, c] of activeStep.outPos) {
+        if (m[`${r},${c}`] !== 'source') m[`${r},${c}`] = 'target';
+      }
+    }
+    return m;
+  }, [activeStep]);
+
+  const ruleA = pp(stepProgress, [0.00, 0.05]) * (1 - pp(stepProgress, [0.94, 1.00]));
+  const fly1T = pp(stepProgress, PH.fly1);
+  const fly2T = pp(stepProgress, PH.fly2);
+  const burst1T = pp(stepProgress, PH.burst1);
+  const burst2T = pp(stepProgress, PH.burst2);
+  const showFly1 = stepProgress >= PH.fly1[0] && stepProgress < PH.fly1[1];
+  const showFly2 = stepProgress >= PH.fly2[0] && stepProgress < PH.fly2[1];
+  const showBurst1 = stepProgress >= PH.burst1[0] && stepProgress < PH.burst1[1];
+  const showBurst2 = stepProgress >= PH.burst2[0] && stepProgress < PH.burst2[1];
+  const showBirth1 = stepProgress >= PH.birth1[0];
+  const showBirth2 = stepProgress >= PH.birth2[0];
+  const safeStepIdx = Math.max(0, stepIdx || 0);
+
+  return (
+    <group ref={groupRef} position={MONITOR_POS}>
+      <mesh position={[0, 0, -0.22]} castShadow>
+        <boxGeometry args={[2.4, 2.05, 0.42]} />
+        <meshStandardMaterial color="#14161c" roughness={0.55} metalness={0.55} />
+      </mesh>
+      <mesh position={[0, 0, 0.01]}>
+        <boxGeometry args={[2.18, 1.84, 0.05]} />
+        <meshStandardMaterial color="#08090d" roughness={0.4} metalness={0.4} />
+      </mesh>
+      <mesh ref={screenRef} position={[0, 0, 0.05]} renderOrder={-1}
+        onClick={(e) => { e.stopPropagation(); onClick && onClick(); }}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
+        onPointerOut={() => setHovered(false)}>
+        <planeGeometry args={[2.08, 1.74]} />
+        <shaderMaterial transparent depthWrite={false} uniforms={uniforms}
+          vertexShader={`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`}
+          fragmentShader={`
+            uniform float uTime; varying vec2 vUv;
+            void main(){
+              vec2 uv = vUv*2.0-1.0; float r2 = dot(uv,uv);
+              uv *= 1.0+0.08*r2; uv = uv*0.5+0.5;
+              if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){ gl_FragColor=vec4(0.0); return; }
+              vec2 g = fract(uv*14.0);
+              float line = smoothstep(0.02,0.0,abs(g.x-0.5)-0.48)+smoothstep(0.02,0.0,abs(g.y-0.5)-0.48);
+              float scan = sin(uv.y*900.0+uTime*6.0)*0.5+0.5; scan = mix(1.0,scan,0.18);
+              float band = smoothstep(0.03,0.0,abs(uv.y-fract(uTime*0.08))-0.015)*0.25;
+              float vig = 1.0 - smoothstep(0.4,1.0,r2);
+              vec3 col = vec3(0.025,0.06,0.05);
+              col += vec3(0.015,0.05,0.03)*line;
+              col += vec3(0.10,0.30,0.18)*band;
+              col *= scan*vig;
+              gl_FragColor = vec4(col, 0.94);
+            }
+          `} />
+      </mesh>
+
+      <group ref={slideRef}>
+        <group position={[0, 0, 0]}>
+          <group position={[0, 0, 0.075]}>
+            {Array.from({ length: 25 }).map((_, i) => (
+              <GridSlot key={`slot-${i}`} r={Math.floor(i / 5)} c={i % 5} />
+            ))}
+          </group>
+          <RuleHighlight activeStep={activeStep} alpha={ruleA} grid={grid} />
+          <group position={[0, 0, 0.09]}>
+            {Array.from({ length: 25 }).map((_, i) => {
+              const r = Math.floor(i / 5), c = i % 5;
+              const letter = grid[r][c];
+              return (
+                <Keycap key={`${r},${c}`} r={r} c={c} letter={letter}
+                  role={roleMap[`${r},${c}`] || null}
+                  buildStart={buildStart} buildIndex={i}
+                  keyHighlight={keyFocused && keyLetterSet.has(letter)} />
+              );
+            })}
+          </group>
+
+          {activeStep && (
+            <>
+              <CloneFlyer
+                fromR={activeStep.inPos[0][0]} fromC={activeStep.inPos[0][1]}
+                toR={activeStep.outPos[0][0]} toC={activeStep.outPos[0][1]}
+                letter={activeStep.inPair[0]} progress={fly1T} visible={showFly1} />
+              <Burst r={activeStep.outPos[0][0]} c={activeStep.outPos[0][1]}
+                progress={burst1T} active={showBurst1} />
+              <BirthLetter r={activeStep.outPos[0][0]} c={activeStep.outPos[0][1]}
+                letter={activeStep.outPair[0]} stepProgress={stepProgress}
+                birthPhase={PH.birth1} glidePhase={PH.glide1}
+                active={showBirth1} slotIndex={safeStepIdx * 2} />
+
+              <CloneFlyer
+                fromR={activeStep.inPos[1][0]} fromC={activeStep.inPos[1][1]}
+                toR={activeStep.outPos[1][0]} toC={activeStep.outPos[1][1]}
+                letter={activeStep.inPair[1]} progress={fly2T} visible={showFly2} />
+              <Burst r={activeStep.outPos[1][0]} c={activeStep.outPos[1][1]}
+                progress={burst2T} active={showBurst2} />
+              <BirthLetter r={activeStep.outPos[1][0]} c={activeStep.outPos[1][1]}
+                letter={activeStep.outPair[1]} stepProgress={stepProgress}
+                birthPhase={PH.birth2} glidePhase={PH.glide2}
+                active={showBirth2} slotIndex={safeStepIdx * 2 + 1} />
+            </>
+          )}
+        </group>
+
+        <group position={[RESULT_OFFSET, 0, 0.09]}>
+          <ResultGridContent finalOutputSlots={finalOutputSlots} />
+        </group>
+      </group>
+
+      <mesh position={[1.02, -0.94, 0.06]}>
+        <sphereGeometry args={[0.03, 8, 8]} />
+        <meshBasicMaterial color="#2ee6a8" toneMapped={false} />
+      </mesh>
+      <mesh position={[0, -1.14, -0.05]}>
+        <boxGeometry args={[0.7, 0.1, 0.5]} />
+        <meshStandardMaterial color="#0e1016" roughness={0.6} metalness={0.5} />
+      </mesh>
+    </group>
+  );
+}
+
+/* ═══ FLOATING TERMINAL — now draggable in screen space ═══ */
+function FloatingTerminal({ activeStep, stepIdx, steps, result, mode }) {
+  const grp = useRef(null);
+  const { camera, gl } = useThree();
+  const offsetRef = useRef(new THREE.Vector3(1.8, 0.1, -3.0));
+  const [hovered, setHovered] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  useCursor(hovered || dragging);
+
+  const handlePointerDown = useCallback((e) => {
+    e.stopPropagation();
+    Sound.hover();
+    setDragging(true);
+    const startX = e.clientX, startY = e.clientY;
+    const startOffset = offsetRef.current.clone();
+
+    const onMove = (ev) => {
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      const distance = Math.abs(startOffset.z) || 3.0;
+      const fov = camera.fov * Math.PI / 180;
+      const h = 2 * Math.tan(fov / 2) * distance;
+      const w = h * camera.aspect;
+      const nx = startOffset.x + (dx / window.innerWidth) * w;
+      const ny = startOffset.y - (dy / window.innerHeight) * h;
+      // keep some minimum forward distance so it doesn't fly through the camera
+      offsetRef.current.set(nx, ny, startOffset.z);
+    };
+    const onUp = () => {
+      setDragging(false);
+      Sound.panel();
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  }, [camera]);
+
+  useFrame(() => {
+    const g = grp.current; if (!g) return;
+    const offset = offsetRef.current.clone();
+    offset.applyQuaternion(camera.quaternion);
+    g.position.copy(camera.position).add(offset);
+    g.quaternion.copy(camera.quaternion);
+  });
+
+  const panelW = 1.15, panelH = 1.25;
+  const stepNum = steps.length ? String(stepIdx + 1).padStart(2, '0') : '00';
+  const totalNum = String(steps.length).padStart(2, '0');
+  const inStr = activeStep ? activeStep.inPair.join('') : '——';
+  const outStr = activeStep ? activeStep.outPair.join('') : '——';
+  const ruleStr = activeStep ? activeStep.rule : 'AWAITING STEP';
+  const inPosStr = activeStep ? activeStep.inPos.map((p) => `${p[0]},${p[1]}`).join(' · ') : '—';
+  const outPosStr = activeStep ? activeStep.outPos.map((p) => `${p[0]},${p[1]}`).join(' · ') : '—';
+  const finalOut = result.output || '——';
+
+  return (
+    <group ref={grp}>
+      {/* Draggable hitbox — invisible but interactive */}
+      <mesh position={[0, 0, 0.02]}
+        onPointerDown={handlePointerDown}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
+        onPointerOut={() => setHovered(false)}>
+        <planeGeometry args={[panelW + 0.20, panelH + 0.20]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} depthTest={false} />
+      </mesh>
+
+      <mesh position={[0, 0, -0.008]}>
+        <planeGeometry args={[panelW + 0.05, panelH + 0.05]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.55} />
+      </mesh>
+      <mesh>
+        <planeGeometry args={[panelW, panelH]} />
+        <meshBasicMaterial color="#060d16" transparent opacity={0.9} />
+      </mesh>
+      <mesh position={[0, panelH / 2 - 0.005, 0.001]}>
+        <planeGeometry args={[panelW, 0.010]} />
+        <meshBasicMaterial color={dragging ? '#ffcf8a' : '#ff9640'} toneMapped={false} transparent opacity={0.95} />
+      </mesh>
+      <mesh position={[0, -panelH / 2 + 0.005, 0.001]}>
+        <planeGeometry args={[panelW, 0.010]} />
+        <meshBasicMaterial color="#2ee6a8" toneMapped={false} transparent opacity={0.95} />
+      </mesh>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 0.08, 0.01]}
+        fontSize={0.05} color="#ff9640" font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.05} fontWeight={700}>
+        PLAYFAIR · DOSSIER
+      </Text>
+      <Text position={[panelW / 2 - 0.08, panelH / 2 - 0.08, 0.01]}
+        fontSize={0.04} color="#2ee6a8" font={PLAYFAIR_FONT}
+        anchorX="right" anchorY="middle" letterSpacing={0.05}>
+        {mode === 'encrypt' ? 'ENCRYPT' : 'DECRYPT'}
+      </Text>
+      <mesh position={[0, panelH / 2 - 0.155, 0.005]}>
+        <planeGeometry args={[panelW - 0.14, 0.003]} />
+        <meshBasicMaterial color="#2ee6a8" transparent opacity={0.3} toneMapped={false} />
+      </mesh>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 0.25, 0.01]}
+        fontSize={0.034} color="#a0bedc" fillOpacity={0.7} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.10} fontStyle="italic">STEP</Text>
+      <Text position={[-panelW / 2 + 0.28, panelH / 2 - 0.25, 0.01]}
+        fontSize={0.062} color="#ffffff" font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.04} fontWeight={700}>{stepNum}</Text>
+      <Text position={[-panelW / 2 + 0.50, panelH / 2 - 0.25, 0.01]}
+        fontSize={0.034} color="#a0bedc" fillOpacity={0.5} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.10}>/ {totalNum}</Text>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 0.38, 0.01]}
+        fontSize={0.034} color="#a0bedc" fillOpacity={0.7} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.10} fontStyle="italic">RULE</Text>
+      <Text position={[-panelW / 2 + 0.28, panelH / 2 - 0.38, 0.01]}
+        fontSize={0.044} color={activeStep ? '#ffb454' : '#a0bedc'}
+        fillOpacity={activeStep ? 1 : 0.5}
+        font={PLAYFAIR_FONT} anchorX="left" anchorY="middle" letterSpacing={0.05} fontWeight={600}>
+        {ruleStr}
+      </Text>
+      <mesh position={[0, panelH / 2 - 0.485, 0.004]}>
+        <planeGeometry args={[panelW - 0.14, 0.003]} />
+        <meshBasicMaterial color="#ff9640" transparent opacity={0.25} toneMapped={false} />
+      </mesh>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 0.60, 0.01]}
+        fontSize={0.034} color="#a0bedc" fillOpacity={0.7} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.10} fontStyle="italic">DIGRAPH</Text>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 0.75, 0.01]}
+        fontSize={0.100} color={activeStep ? '#ffd694' : '#a0bedc'}
+        fillOpacity={activeStep ? 1 : 0.4}
+        font={PLAYFAIR_FONT} anchorX="left" anchorY="middle" letterSpacing={0.08} fontWeight={700}>
+        {inStr}
+      </Text>
+      <Text position={[-panelW / 2 + 0.32, panelH / 2 - 0.75, 0.01]}
+        fontSize={0.075} color="#a0bedc" fillOpacity={0.5} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle">→</Text>
+      <Text position={[-panelW / 2 + 0.43, panelH / 2 - 0.75, 0.01]}
+        fontSize={0.100} color={activeStep ? '#a8ffdd' : '#a0bedc'}
+        fillOpacity={activeStep ? 1 : 0.4}
+        font={PLAYFAIR_FONT} anchorX="left" anchorY="middle" letterSpacing={0.08} fontWeight={700}>
+        {outStr}
+      </Text>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 0.87, 0.01]}
+        fontSize={0.026} color="#a0bedc" fillOpacity={0.55} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.04} fontStyle="italic">
+        {inPosStr}  →  {outPosStr}
+      </Text>
+      <mesh position={[0, panelH / 2 - 0.955, 0.004]}>
+        <planeGeometry args={[panelW - 0.14, 0.003]} />
+        <meshBasicMaterial color="#2ee6a8" transparent opacity={0.3} toneMapped={false} />
+      </mesh>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 1.05, 0.01]}
+        fontSize={0.034} color="#a0bedc" fillOpacity={0.7} font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.10} fontStyle="italic">RESULT</Text>
+      <Text position={[-panelW / 2 + 0.08, panelH / 2 - 1.19, 0.01]}
+        fontSize={0.042} color="#7dffb8" font={PLAYFAIR_FONT}
+        anchorX="left" anchorY="middle" letterSpacing={0.06} fontWeight={600}
+        maxWidth={panelW - 0.18}>
+        {finalOut.slice(0, 30) || '——'}
+      </Text>
+      {/* small drag hint */}
+      <Text position={[panelW / 2 - 0.08, -panelH / 2 + 0.07, 0.011]}
+        fontSize={0.024} color="#a0bedc" fillOpacity={0.4} font={PLAYFAIR_FONT}
+        anchorX="right" anchorY="middle" letterSpacing={0.15} fontStyle="italic">
+        ⟡ DRAG
+      </Text>
+    </group>
+  );
+}
+
+/* ═══ DESK PROPS ═══ */
+function Terminal({ output }) {
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered);
+  const lines = useMemo(() => {
+    if (!output) return ['> READY'];
+    return ['> ' + output.slice(0, 22), '  ' + output.slice(22, 44)];
+  }, [output]);
+  return (
+    <group position={[1.55, 1.12, -5.1]}
+      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); Sound.hover(); }}
+      onPointerOut={() => setHovered(false)}>
+      <mesh rotation={[-0.15, 0, 0]} castShadow>
+        <boxGeometry args={[1.1, 0.62, 0.28]} />
+        <meshStandardMaterial color="#0e1620" roughness={0.6} metalness={0.4}
+          emissive={hovered ? '#1a3040' : '#080e18'}
+          emissiveIntensity={hovered ? 1.2 : 0.4} />
+      </mesh>
+      <mesh position={[0, 0.02, 0.15]} rotation={[-0.15, 0, 0]}>
+        <planeGeometry args={[0.88, 0.42]} />
+        <meshStandardMaterial color="#001a10" emissive="#0a4a30" emissiveIntensity={1.6}
+          roughness={0.25} metalness={0.2} toneMapped={false} />
+      </mesh>
+      {lines.map((line, i) => (
+        <Text key={i} position={[-0.38, 0.10 - i * 0.11, 0.165]}
+          rotation={[-0.15, 0, 0]} fontSize={0.042} color="#7dffb8"
+          font={PLAYFAIR_FONT} anchorX="left" anchorY="middle">{line}</Text>
+      ))}
+      <mesh position={[0, -0.34, 0.02]} rotation={[-0.15, 0, 0]}>
+        <boxGeometry args={[0.5, 0.08, 0.22]} />
+        <meshStandardMaterial color="#0a1018" roughness={0.8} metalness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+function DeskLamp() {
+  const lightRef = useRef(null);
+  useFrame((state) => {
+    if (lightRef.current) {
+      lightRef.current.intensity = 2.4 + Math.sin(state.clock.elapsedTime * 0.5) * 0.3
+                                        + Math.sin(state.clock.elapsedTime * 7.1) * 0.08;
+    }
+  });
+  return (
+    <group position={[-1.75, 1.0, -5.1]}>
+      <mesh position={[0, -0.02, 0]}>
+        <cylinderGeometry args={[0.18, 0.22, 0.05, 12]} />
+        <meshStandardMaterial color="#1a2430" roughness={0.6} metalness={0.5} />
+      </mesh>
+      <mesh position={[0.12, 0.28, 0]} rotation={[0, 0, -0.4]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.55, 8]} />
+        <meshStandardMaterial color="#2a3a4e" roughness={0.5} metalness={0.6} />
+      </mesh>
+      <mesh position={[0.32, 0.52, 0]} rotation={[0, 0, 0.5]}>
+        <coneGeometry args={[0.14, 0.2, 10, 1, true]} />
+        <meshStandardMaterial color="#c8a060" roughness={0.35} metalness={0.7}
+          emissive="#ff9640" emissiveIntensity={2.4} toneMapped={false} />
+      </mesh>
+      <pointLight ref={lightRef} position={[0.32, 0.5, 0.35]} intensity={2.4}
+        color="#ffb066" distance={5} decay={2} />
+    </group>
+  );
+}
+
+/* ═══ LIGHTS ═══ */
+function CinematicLights() {
+  const amberRef = useRef(null), cyanRef = useRef(null);
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    if (amberRef.current) amberRef.current.intensity = 12 + Math.sin(t * 0.9) * 3 + Math.sin(t * 13) * 0.6;
+    if (cyanRef.current) cyanRef.current.intensity = 10 + Math.sin(t * 1.1 + 1) * 2.5;
+  });
+  return (
+    <>
+      <ambientLight intensity={0.15} color="#1a3050" />
+      <spotLight position={[0, ROOM_H - 0.2, 1.5]} angle={0.9} penumbra={0.9}
+        intensity={26} color="#c8e0ff" distance={14} decay={2} castShadow
+        shadow-mapSize-width={1024} shadow-mapSize-height={1024}
+        target-position={[0, 1, -5]} />
+      <pointLight ref={amberRef} position={[-ROOM_W / 2 + 1.2, 2.2, 0.5]}
+        intensity={12} color="#ff8a2c" distance={14} decay={2} />
+      <pointLight ref={cyanRef} position={[ROOM_W / 2 - 1.2, 2.2, -1.5]}
+        intensity={10} color="#2ee6a8" distance={14} decay={2} />
+      <pointLight position={[0, 0.3, 3]} intensity={6} color="#3a6ae0" distance={10} decay={2} />
+    </>
+  );
+}
+
+/* ═══ SCENE ═══ */
+function Scene({
+  grid, activeStep, stepIdx, steps, result, mode,
+  focusedTarget, setFocusedTarget, asciiMode,
+  buildStart, stepProgress, interactive,
+  keyFocused, keyLetterSet, finalOutputSlots,
+  showResult,
+}) {
+  const { gl } = useThree();
+  useEffect(() => {
+    gl.toneMapping = THREE.ACESFilmicToneMapping;
+    gl.toneMappingExposure = 1.15;
+  }, [gl]);
+  return (
+    <>
+      <color attach="background" args={['#02040a']} />
+      <fog attach="fog" args={['#02040a', 3.5, 20]} />
+      <CinematicLights />
+      <Room />
+      <DeskLamp />
+      <Terminal output={result.output} />
+      <DustMotes count={260} />
+      <group onClick={(e) => {
+        if (!interactive) return;
+        e.stopPropagation();
+        setFocusedTarget({ position: MONITOR_POS });
+        Sound.click();
+      }}>
+        <MonitorScreen grid={grid} activeStep={activeStep}
+          onClick={() => { if (interactive) { setFocusedTarget({ position: MONITOR_POS }); Sound.click(); } }}
+          buildStart={buildStart} stepProgress={stepProgress}
+          keyFocused={keyFocused} keyLetterSet={keyLetterSet}
+          finalOutputSlots={finalOutputSlots}
+          showResult={showResult}
+          stepIdx={stepIdx} />
+      </group>
+      <Player focusedTarget={focusedTarget} active={interactive} />
+      <FloatingTerminal activeStep={activeStep} stepIdx={stepIdx}
+        steps={steps} result={result} mode={mode} />
+      <EffectComposer multisampling={0}>
+        <Bloom intensity={0.9} luminanceThreshold={0.45} luminanceSmoothing={0.35} mipmapBlur radius={0.65} />
+        <ChromaticAberration offset={[0.0009, 0.0013]} radialModulation modulationOffset={0.35} />
+        <Noise premultiply blendFunction={BlendFunction.OVERLAY} opacity={0.3} />
+        <Vignette eskil={false} offset={0.15} darkness={1.05} />
+        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+      </EffectComposer>
+      {asciiMode && (
+        <AsciiRenderer fgColor="#e0ecff" bgColor="#02040a"
+          characters=" .:-=+*#%@" invert={false} resolution={0.2} />
+      )}
+    </>
+  );
+}
+
+/* ═══ BIGRAM STRIP — now DRAGGABLE ═══ */
+function BigramStrip({ input, activePairIdx, steps }) {
+  const pairs = useMemo(() => toBigrams(input), [input]);
+  const [revealed, setRevealed] = useState(0);
+  const { pos, onPointerDown } = useDraggable(
+    typeof window !== 'undefined' ? window.innerWidth / 2 - 220 : 300,
+    64
+  );
+  useEffect(() => {
+    setRevealed(0);
+    if (pairs.length === 0) return;
+    let i = 0;
+    const t = setInterval(() => {
+      i += 1; setRevealed(i);
+      if (i >= pairs.length) clearInterval(t);
+    }, 80);
+    return () => clearInterval(t);
+  }, [pairs]);
+  if (pairs.length === 0) return null;
+  return (
+    <div
+      className="hud-layer draggable"
+      onPointerDown={onPointerDown}
+      style={{
+        position: 'fixed', left: 0, top: 0,
+        transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
+        touchAction: 'none', willChange: 'transform',
+        display: 'flex', alignItems: 'center', gap: 8,
+        maxWidth: '92vw', pointerEvents: 'auto',
+      }}>
+      <span className="mono shrink-0"
+        style={{ fontSize: 9, letterSpacing: '.24em',
+          color: 'rgba(180,210,240,.45)', fontStyle: 'italic' }}>
+        DIGRAPHS
+      </span>
+      <div className="flex gap-1 items-center flex-wrap justify-center"
+        style={{ maxWidth: '70vw' }}>
+        {pairs.map((p, i) => {
+          const isActive = i === activePairIdx;
+          const isDone = activePairIdx >= 0 && i < activePairIdx;
+          const visible = i < revealed;
+          const outStr = steps[i] ? steps[i].outPair.join('') : '';
+          return (
+            <div key={i}
+              className={'bigram-card' + (isActive ? ' active' : '') + (isDone ? ' done' : '')}
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? 'translateY(0) scale(1)' : 'translateY(-6px) scale(0.82)',
+              }}>
+              <span>{p[0]}{p[1]}</span>
+              {(isActive || isDone) && outStr && <span className="sub">→{outStr}</span>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ═══ DRAGGABLE HOOK ═══ */
+function useDraggable(initialX, initialY) {
+  const [pos, setPos] = useState({ x: initialX, y: initialY });
+  const posRef = useRef(pos);
+  posRef.current = pos;
+
+  const onPointerDown = useCallback((e) => {
+    const target = e.target;
+    if (target && target.closest) {
+      if (target.closest('button, input, textarea, select, label, a, [data-no-drag]')) return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    Sound.hover();
+
+    const startX = e.clientX, startY = e.clientY;
+    const baseX = posRef.current.x, baseY = posRef.current.y;
+    let moved = false;
+
+    const onMove = (ev) => {
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      if (!moved && Math.hypot(dx, dy) > 3) moved = true;
+      setPos({ x: baseX + dx, y: baseY + dy });
+    };
+    const onUp = () => {
+      if (moved) Sound.panel();
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  }, []);
+
+  return { pos, onPointerDown };
+}
+
+/* ═══ DRAGGABLE PANEL ═══ */
+function DraggablePanel({ initialX, initialY, width, children, z = 'hud-layer' }) {
+  const { pos, onPointerDown } = useDraggable(initialX, initialY);
+  return (
+    <div
+      className={`${z} draggable`}
+      onPointerDown={onPointerDown}
+      style={{
+        position: 'fixed', left: 0, top: 0,
+        width: width,
+        transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
+        touchAction: 'none',
+        willChange: 'transform',
+        pointerEvents: 'auto',
+      }}>
+      <div className="panel">{children}</div>
+    </div>
+  );
+}
+
+/* ═══ HUD ═══ */
+function HUD({
+  steps, stepIdx, playing, speed, setSpeed, setStepIdx, setPlaying, togglePlay,
+  result, mode, setMode, input, setInput, keyText, setKeyText,
+  onDownload, onCopy, copied, asciiMode, setAsciiMode,
+  keyFocused, setKeyFocused,
+  activeStep, showResult, onToggleResult, muted, onToggleMute,
+}) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+  );
+  const [panelState, setPanelState] = useState(() => {
+    const m = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+    return { left: !m, rule: !m, bottom: !m, bigrams: !m };
+  });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handler = () => setIsMobile(mq.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const togglePanel = (key) => { Sound.toggle(); setPanelState(s => ({ ...s, [key]: !s[key] })); };
+
+  const ruleInitX = useMemo(() => {
+    if (typeof window === 'undefined') return 400;
+    return Math.max(280, Math.round(window.innerWidth * 0.30 - 300));
+  }, []);
+  const ruleInitY = useMemo(() => {
+    if (typeof window === 'undefined') return 340;
+    return Math.round(window.innerHeight * 0.42);
+  }, []);
+
+  return (
+    <>
+      <div className="crosshair" />
+
+      {/* ═══ TOP BAR ═══ */}
+      <div className="hud-layer fixed top-0 left-0 right-0 h-11 px-4 flex items-center justify-between border-b border-white/10 bg-black/80 backdrop-blur-sm pointer-events-none">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="text-[#ff9640] shrink-0"
+            style={{ fontSize: 15, letterSpacing: '.3em', fontWeight: 700,
+              textShadow: '0 0 12px rgba(255,150,60,.7), 0 0 24px rgba(255,150,60,.35)' }}>
+            PLAYFAIR
+          </span>
+          {!isMobile && (
+            <>
+              <span className="text-white/20">|</span>
+              <span className="label truncate" style={{ letterSpacing: '.28em' }}>ASCII // R3F DOSSIER — ROOM</span>
+            </>
+          )}
+        </div>
+
+        {!isMobile && (
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <button className={'btn ' + (mode === 'encrypt' ? 'on' : '')} onClick={() => setMode('encrypt')}>Encrypt</button>
+            <button className={'btn ' + (mode === 'decrypt' ? 'on' : '')} onClick={() => setMode('decrypt')}>Decrypt</button>
+            <button className={'btn ' + (asciiMode ? 'on' : '')} onClick={() => setAsciiMode(!asciiMode)}>
+              {asciiMode ? 'ASCII' : 'SOLID'}
+            </button>
+            <button className={'btn ' + (muted ? '' : 'on')} onClick={onToggleMute}
+              title={muted ? 'Unmute' : 'Mute'}>
+              {muted ? '🔇 AUDIO' : '🔊 AUDIO'}
+            </button>
+            <span className="label">BIGRAMS: <span style={{ color: '#ff9640' }}>{steps.length}</span></span>
+          </div>
+        )}
+
+        <button
+          className="hamburger pointer-events-auto"
+          onClick={() => setMobileMenuOpen(v => !v)}
+          aria-label="menu">
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
+      </div>
+
+      {/* ═══ MOBILE MENU ═══ */}
+      {mobileMenuOpen && (
+        <div className="hud-layer-menu mobile-menu">
+          <div className="panel overflow-hidden">
+            <div className="panel-header">
+              <span className="label">Panels</span>
+              <button className="min-btn" onClick={() => setMobileMenuOpen(false)}>✕</button>
+            </div>
+            {[
+              { key: 'left', label: 'KEY / INPUT PANEL' },
+              { key: 'rule', label: 'RULE PANEL' },
+              { key: 'bigrams', label: 'BIGRAM STRIP' },
+              { key: 'bottom', label: 'BIGRAM STEPPER' },
+            ].map(item => (
+              <div key={item.key}
+                className={'mobile-toggle ' + (panelState[item.key] ? 'on' : '')}
+                onClick={() => togglePanel(item.key)}>
+                <span>{item.label}</span>
+                <span className="indicator"></span>
+              </div>
+            ))}
+            <div className="panel-header" style={{ borderTop: '1px solid rgba(120,170,220,.1)', borderBottom: 'none' }}>
+              <span className="label">Mode</span>
+            </div>
+            <div className="mobile-toggle" style={{ gap: 8 }}>
+              <button className={'btn ' + (mode === 'encrypt' ? 'on' : '')}
+                style={{ flex: 1 }}
+                onClick={() => setMode('encrypt')}>Encrypt</button>
+              <button className={'btn ' + (mode === 'decrypt' ? 'on' : '')}
+                style={{ flex: 1 }}
+                onClick={() => setMode('decrypt')}>Decrypt</button>
+            </div>
+            <div className="mobile-toggle" style={{ gap: 8 }}>
+              <button className={'btn ' + (asciiMode ? 'on' : '')}
+                style={{ flex: 1 }}
+                onClick={() => setAsciiMode(!asciiMode)}>
+                {asciiMode ? 'ASCII' : 'SOLID'}
+              </button>
+              <button className={'btn ' + (muted ? '' : 'on')}
+                style={{ flex: 1 }}
+                onClick={onToggleMute}>
+                {muted ? '🔇' : '🔊'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ BIGRAM STRIP (draggable) ═══ */}
+      {panelState.bigrams && <BigramStrip input={input} activePairIdx={stepIdx} steps={steps} />}
+
+      {/* ═══ LEFT PANEL: KEY / INPUT ═══ */}
+      {panelState.left && (
+        <DraggablePanel initialX={12} initialY={56}
+          width={isMobile ? Math.min(280, (typeof window !== 'undefined' ? window.innerWidth : 400) - 24) : 260}>
+          <div className="panel-header">
+            <span className="label">Passphrase / Input</span>
+            <button className="min-btn" onClick={() => togglePanel('left')} title="minimize">—</button>
+          </div>
+          <div className="p-3 flex flex-col gap-2.5">
+            <div className="label">Key</div>
+            <input className={'field' + (keyFocused ? ' glow' : '')}
+              value={keyText} spellCheck={false}
+              placeholder="ENTER KEY PHRASE…"
+              onFocus={() => setKeyFocused(true)}
+              onBlur={() => setKeyFocused(false)}
+              onChange={(e) => { setKeyText(e.target.value); Sound.type(); }} />
+            <div className="label mt-1" style={{ fontStyle: 'italic' }}>
+              {mode === 'encrypt' ? 'Plaintext' : 'Ciphertext'}
+            </div>
+            <textarea className="field"
+              style={{ resize: 'none', height: 62, lineHeight: 1.5, fontSize: 13 }}
+              spellCheck={false} value={input} placeholder="Type or drop a .txt file…"
+              onChange={(e) => { setInput(e.target.value); Sound.type(); }} />
+            <div className="flex gap-2">
+              <label className="btn flex-1 text-center" style={{ display: 'inline-block' }}>
+                Load .txt
+                <input type="file" accept=".txt,text/plain" style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const f = e.target.files && e.target.files[0]; if (!f) return;
+                    const r = new FileReader();
+                    r.onload = () => { setInput(String(r.result || '').slice(0, 20000)); Sound.click(); };
+                    r.readAsText(f); e.target.value = '';
+                  }} />
+              </label>
+              <button className="btn flex-1" onClick={() => setInput('')}>Clear</button>
+            </div>
+          </div>
+        </DraggablePanel>
+      )}
+
+      {!panelState.left && !isMobile && (
+        <div className="hud-layer fixed left-3 top-14 pointer-events-auto">
+          <button className="btn" onClick={() => togglePanel('left')}>
+            ⌨ KEY / INPUT ▸
+          </button>
+        </div>
+      )}
+
+      {/* ═══ RULE PANEL — next to grid ═══ */}
+      {panelState.rule && (
+        <DraggablePanel initialX={ruleInitX} initialY={ruleInitY}
+          width={isMobile ? Math.min(280, (typeof window !== 'undefined' ? window.innerWidth : 400) - 24) : 260}>
+          <div className="panel-header">
+            <span className="label">Current Rule</span>
+            <button className="min-btn" onClick={() => togglePanel('rule')} title="minimize">—</button>
+          </div>
+          <div className="p-3 flex flex-col gap-2">
+            <div style={{ color: '#ffb454', fontSize: 16, fontWeight: 700, letterSpacing: '.08em' }}>
+              {activeStep ? activeStep.rule : 'AWAITING STEP'}
+            </div>
+            <div style={{ color: '#a8ffdd', fontSize: 11, fontStyle: 'italic',
+              lineHeight: 1.5, minHeight: 32 }}>
+              {activeStep && activeStep.rule === 'SAME ROW' && 'shift each letter right one · wrap at row end'}
+              {activeStep && activeStep.rule === 'SAME COLUMN' && 'shift each letter down one · wrap at column end'}
+              {activeStep && activeStep.rule === 'RECTANGLE' && 'swap with the letters on the opposite corners'}
+              {!activeStep && 'press ▶ PLAY or step through to see the transformation rules'}
+            </div>
+          </div>
+        </DraggablePanel>
+      )}
+
+      {!panelState.rule && !isMobile && (
+        <div className="hud-layer fixed left-3 top-[300px] pointer-events-auto">
+          <button className="btn" onClick={() => togglePanel('rule')}>
+            ⚙ RULE ▸
+          </button>
+        </div>
+      )}
+
+      {/* ═══ RESULT TOGGLE ═══ */}
+      <ResultToggle showResult={showResult} onToggleResult={onToggleResult} isMobile={isMobile} />
+
+      {/* ═══ BOTTOM PANEL ═══ */}
+      {panelState.bottom && (
+        <DraggablePanel
+          initialX={12}
+          initialY={typeof window !== 'undefined' ? Math.max(0, window.innerHeight - 110) : 600}
+          width={typeof window !== 'undefined' ? window.innerWidth - 24 : 800}>
+          <div className="panel-header">
+            <span className="label">Bigram Stepper</span>
+            <button className="min-btn" onClick={() => togglePanel('bottom')} title="minimize">—</button>
+          </div>
+          <div className="p-3 flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <button className="btn" onClick={() => { setPlaying(false); setStepIdx(-1); Sound.click(); }} disabled={!steps.length}>⏮</button>
+              <button className="btn" onClick={() => { setPlaying(false); setStepIdx((i) => Math.max(-1, i - 1)); Sound.click(); }} disabled={!steps.length}>◀</button>
+              <button className={'btn ' + (playing ? 'on' : '')} onClick={togglePlay} disabled={!steps.length} style={{ minWidth: 74 }}>
+                {playing ? '❚❚ Pause' : '▶ Play'}
+              </button>
+              <button className="btn" onClick={() => { setPlaying(false); setStepIdx((i) => Math.min(steps.length - 1, i + 1)); Sound.click(); }} disabled={!steps.length}>▶</button>
+              <button className="btn" onClick={() => { setPlaying(false); setStepIdx(steps.length - 1); Sound.click(); }} disabled={!steps.length}>⏭</button>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="label">Speed</span>
+              <input type="range" min="1200" max="4000" step="100" value={speed}
+                onChange={(e) => setSpeed(Number(e.target.value))} style={{ width: 80 }} />
+              <span className="mono" style={{ fontSize: 11, color: 'rgba(219,230,242,.55)', width: 56 }}>{speed}ms</span>
+            </div>
+            <span className="mono ml-auto" style={{ fontSize: 11, letterSpacing: '.16em', color: 'rgba(219,230,242,.6)', fontStyle: 'italic' }}>
+              STEP {stepIdx + 1} / {steps.length || 0}
+            </span>
+            {result.output && (
+              <div className="flex items-center gap-2 ml-3">
+                <button className="btn" onClick={onCopy}>{copied ? '✓' : 'Copy'}</button>
+                <button className="btn" onClick={onDownload}>Save .txt</button>
+              </div>
+            )}
+          </div>
+        </DraggablePanel>
+      )}
+
+      {!panelState.bottom && !isMobile && (
+        <div className="hud-layer fixed bottom-3 left-3 pointer-events-auto">
+          <button className="btn" onClick={() => togglePanel('bottom')}>
+            ▴ BIGRAM STEPPER
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ═══ RESULT TOGGLE (draggable) ═══ */
+function ResultToggle({ showResult, onToggleResult, isMobile }) {
+  const initX = useMemo(() => {
+    if (typeof window === 'undefined') return 1000;
+    return Math.max(0, window.innerWidth - 56);
+  }, []);
+  const initY = useMemo(() => {
+    if (typeof window === 'undefined') return 400;
+    return Math.round(window.innerHeight / 2 - 40);
+  }, []);
+  const { pos, onPointerDown } = useDraggable(initX, initY);
+  return (
+    <div
+      className="hud-layer-top draggable"
+      onPointerDown={onPointerDown}
+      style={{
+        position: 'fixed', left: 0, top: 0,
+        transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
+        touchAction: 'none', pointerEvents: 'auto',
+        willChange: 'transform',
+      }}>
+      <button
+        className="btn"
+        onClick={onToggleResult}
+        style={{
+          background: showResult ? 'rgba(180,74,255,.20)' : 'rgba(255,150,60,.18)',
+          borderColor: showResult ? 'rgba(180,74,255,.75)' : 'rgba(255,150,60,.75)',
+          color: showResult ? '#e8d0ff' : '#ffcf8a',
+          padding: '12px 14px',
+          fontSize: 11,
+          writingMode: isMobile ? 'horizontal-tb' : 'vertical-rl',
+          textOrientation: 'mixed',
+          letterSpacing: '.18em',
+          boxShadow: showResult
+            ? '0 0 22px rgba(180,74,255,.35)'
+            : '0 0 22px rgba(255,150,60,.30)',
+        }}>
+        {showResult ? '◀ DOSSIER' : 'RESULT ▶'}
+      </button>
+    </div>
+  );
+}
+
+/* ═══ APP ═══ */
+const KEYMAP = [
+  { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+  { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+  { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
+  { name: 'right', keys: ['ArrowRight', 'KeyD'] },
+];
+
+function App() {
+  const [phase, setPhase] = useState('intro');
+  const [keyText, setKeyText] = useState('CICADA3301');
+  const [mode, setMode] = useState('encrypt');
+  const [input, setInput] = useState('ATTACK AT DAWN');
+  const [stepIdx, setStepIdx] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(2600);
+  const [copied, setCopied] = useState(false);
+  const [focusedTarget, setFocusedTarget] = useState(null);
+  const [asciiMode, setAsciiMode] = useState(false);
+  const [keyFocused, setKeyFocused] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [muted, setMuted] = useState(false);
+
+  const [buildStart, setBuildStart] = useState(0);
+  const [stepProgress, setStepProgress] = useState(1);
+  const stepRafRef = useRef(0);
+  const stepStartRef = useRef(0);
+  const speedRef = useRef(speed);
+  speedRef.current = speed;
+
+  const result = useMemo(() => runCipher(input, keyText, mode), [input, keyText, mode]);
+  const steps = result.steps;
+  const grid = result.grid;
+
+  const keyLetterSet = useMemo(() => {
+    const s = new Set();
+    for (const ch of (keyText || '').toUpperCase().replace(/[^A-Z]/g, '')) {
+      s.add(ch === 'J' ? 'I' : ch);
+    }
+    return s;
+  }, [keyText]);
+
+  // ─── WARM-UP: create the AudioContext + pre-generate the shatter buffer
+  //     on the FIRST user gesture anywhere on the page. This eliminates the
+  //     lag when the shatter actually fires, because the buffer already exists.
+  useEffect(() => {
+    const warm = () => {
+      Sound.init();
+      Sound.resume();
+    };
+    window.addEventListener('pointerdown', warm, { once: true, capture: true });
+    window.addEventListener('keydown', warm, { once: true, capture: true });
+    window.addEventListener('touchstart', warm, { once: true, capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', warm, { capture: true });
+      window.removeEventListener('keydown', warm, { capture: true });
+      window.removeEventListener('touchstart', warm, { capture: true });
+    };
+  }, []);
+
+  useEffect(() => { setBuildStart(performance.now()); }, [keyText]);
+
+  useEffect(() => {
+    setStepIdx(-1); setPlaying(false); setStepProgress(1);
+  }, [input, keyText, mode]);
+
+  useEffect(() => {
+    if (!playing) return;
+    if (steps.length === 0 || stepIdx >= steps.length - 1) {
+      setPlaying(false); return;
+    }
+    const t = setTimeout(() => setStepIdx((i) => i + 1), speed);
+    return () => clearTimeout(t);
+  }, [playing, stepIdx, steps.length, speed]);
+
+  useEffect(() => {
+    if (stepIdx < 0) { setStepProgress(1); return; }
+    cancelAnimationFrame(stepRafRef.current);
+    stepStartRef.current = performance.now();
+    // Animation duration slightly less than the step interval so nothing
+    // gets cut off — there's a small buffer of settled state between steps.
+    const duration = Math.max(600, speedRef.current * 0.96);
+    const tick = (now) => {
+      const t = Math.min(1, (now - stepStartRef.current) / duration);
+      setStepProgress(t);
+      if (t < 1) stepRafRef.current = requestAnimationFrame(tick);
+    };
+    setStepProgress(0);
+    stepRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(stepRafRef.current);
+  }, [stepIdx]);
+
+  const activeStep = stepIdx >= 0 && stepIdx < steps.length ? steps[stepIdx] : null;
+
+  const finalOutputSlots = useMemo(() => {
+    if (!steps.length) return [];
+    const out = [];
+    const upto = Math.min(stepIdx - 1, steps.length - 1);
+    for (let i = 0; i <= upto; i++) {
+      if (steps[i]) out.push(steps[i].outPair[0], steps[i].outPair[1]);
+    }
+    return out;
+  }, [steps, stepIdx]);
+
+  useEffect(() => {
+    const onClick = (e) => {
+      const t = e.target;
+      if (t && t.closest && t.closest('button, .btn, .hamburger, .min-btn, .mobile-toggle')) {
+        Sound.click();
+      }
+    };
+    const onOver = (e) => {
+      const t = e.target;
+      if (t && t.closest && t.closest('button, .btn, .hamburger, .min-btn, .mobile-toggle')) {
+        Sound.hover();
+      }
+    };
+    document.addEventListener('click', onClick);
+    document.addEventListener('mouseover', onOver);
+    return () => {
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('mouseover', onOver);
+    };
+  }, []);
+
+  const enter = useCallback(() => {
+    setPhase((p) => {
+      if (p !== 'intro') return p;
+      Sound.init();
+      Sound.resume();
+      Sound.shatter();
+      Sound.ambienceStart();
+      setBuildStart(performance.now() + 350);
+      return 'shatter';
+    });
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    if (steps.length === 0) return;
+    Sound.toggle();
+    if (playing) { setPlaying(false); return; }
+    if (stepIdx >= steps.length - 1) setStepIdx(-1);
+    setPlaying(true);
+  }, [playing, steps.length, stepIdx]);
+
+  const onDownload = useCallback(() => {
+    const blob = new Blob([result.output], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'playfair_' + mode + '_' + Date.now() + '.txt';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, [result.output, mode]);
+
+  const onCopy = useCallback(() => {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(result.output).then(() => {
+      setCopied(true); Sound.click();
+      setTimeout(() => setCopied(false), 1500);
+    }).catch(() => {});
+  }, [result.output]);
+
+  const onToggleMute = useCallback(() => {
+    const m = Sound.toggleMute();
+    setMuted(m);
+    if (!m) Sound.click();
+  }, []);
+
+  const interactive = phase === 'dashboard';
+  const showDash = phase === 'dashboard' || phase === 'shatter';
+
+  return (
+    <KeyboardControls map={KEYMAP}>
+      <div className="h-full w-full relative">
+        {phase !== 'dashboard' && <Intro onEnter={enter} fading={phase === 'shatter'} />}
+
+        <Canvas
+          dpr={[1, 1.5]} shadows
+          gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
+          camera={{ position: [0, 1.7, 4.2], fov: 48, near: 0.1, far: 100 }}
+          onCreated={({ gl, camera }) => {
+            gl.setClearColor('#02040a', 1);
+            gl.shadowMap.enabled = true;
+            gl.shadowMap.type = THREE.PCFSoftShadowMap;
+            camera.position.set(0, 1.7, 4.2);
+            camera.lookAt(0, 1.95, -5);
+            camera.updateProjectionMatrix();
+          }}
+          style={{ position: 'fixed', inset: 0, zIndex: 0 }}
+        >
+          <Suspense fallback={null}>
+            <Scene grid={grid} activeStep={activeStep}
+              stepIdx={stepIdx} steps={steps} result={result} mode={mode}
+              focusedTarget={focusedTarget} setFocusedTarget={setFocusedTarget}
+              asciiMode={asciiMode} buildStart={buildStart} stepProgress={stepProgress}
+              interactive={interactive}
+              keyFocused={keyFocused} keyLetterSet={keyLetterSet}
+              finalOutputSlots={finalOutputSlots}
+              showResult={showResult} />
+            {interactive && <PointerLockControls selector="#lock-btn" makeDefault />}
+          </Suspense>
+        </Canvas>
+
+        {showDash && (
+          <HUD steps={steps} stepIdx={stepIdx} playing={playing} speed={speed}
+            setSpeed={setSpeed} setStepIdx={setStepIdx} setPlaying={setPlaying}
+            togglePlay={togglePlay} result={result} mode={mode} setMode={setMode}
+            input={input} setInput={setInput} keyText={keyText} setKeyText={setKeyText}
+            onDownload={onDownload} onCopy={onCopy} copied={copied}
+            asciiMode={asciiMode} setAsciiMode={setAsciiMode}
+            keyFocused={keyFocused} setKeyFocused={setKeyFocused}
+            activeStep={activeStep}
+            showResult={showResult}
+            onToggleResult={() => { setShowResult(v => !v); Sound.toggle(); }}
+            muted={muted} onToggleMute={onToggleMute} />
+        )}
+
+        {/* Always-mounted shatter canvas — no allocation hitch on trigger */}
+        <ShatterCanvas active={phase === 'shatter'}
+          onDone={() => setPhase('dashboard')} />
+      </div>
+    </KeyboardControls>
+  );
+}
+
+const rootEl = document.getElementById('root');
+createRoot(rootEl).render(<App />);
+</script>
+</body>
+</html>
