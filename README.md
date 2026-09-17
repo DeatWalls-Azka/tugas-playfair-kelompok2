@@ -24,7 +24,6 @@ matriks 5×5 terbentuk dari key, setiap bigram dianimasikan, plus efek suara —
 | Mata Kuliah | Keamanan Informasi |
 | Paralel | K2 |
 | Tugas | Aplikasi & Laporan Playfair Cipher |
-| Tenggat | 18 September 2026 |
 | Bahasa / Stack | JavaScript — React + Vite |
 
 ## Fitur
