@@ -113,3 +113,17 @@ tugas-playfair-kelompok2/
 ├── package.json
 └── *.cjs                       # Skrip bantu development (extract, fix, refactor, rebuild, restore)
 ```
+
+## Anggota
+
+| Nama | NIM |
+| --- | --- |
+| Ahmad Rafif Ilmany | M0403241090 |
+| Muhammad Farrel Alfachrezi | M0403241015 |
+| Azka Julian Putra Wahyudi | M0403241029 |
+| Aditya Cahyo Nugroho | M0403241109 |
+| Ilham Edgar | M0403241087 |
+| Muhammad Farhan Wahyu Kamil | M0403241144 |
+| Faqih Sahar Ramadhan | M0403241165 |
+| Muhammad Zakwan Sakhiy | M0403241057 |
+| Muhammad Andhika Putra Pratama | M0403241055 |
